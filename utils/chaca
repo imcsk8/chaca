@@ -1,0 +1,158 @@
+#!/bin/bash
+
+# CLI interface for Chaca
+DATA_DIR="api_data"
+HOST="http://127.0.0.1:8000"
+JSON_EVENT_FILE="new_event.json"
+TOKEN=""
+
+function usage() {
+cat << EOF
+usage: tm [-a] [-d] [-g] [-l] [-h] [-v]
+
+Command line interface for Applicants API
+
+Subcommands:
+
+applicants Manage applicants
+tokens  Manage tokens
+
+EOF
+exit 0
+}
+
+################################################################################
+#                                                                              #
+#                                                                              #
+#                              M A N A G E R S                                 #
+#                                                                              #
+#                                                                              #
+################################################################################
+
+# Manage venue actions
+function applicants {
+    action="$1_event"
+    eval $action $2
+}
+
+# Manage token actions
+function tokens {
+    action="$1_token"
+    eval $action $2
+}
+
+# Manage user actions
+function users {
+    action="$1_user"
+    eval $action $2
+}
+
+
+################################################################################
+#                                                                              #
+#                                                                              #
+#                                 T O K E N S                                  #
+#                                                                              #
+#                                                                              #
+################################################################################
+
+# Show token to stdout
+function show_token {
+    echo $TOKEN
+}
+
+# Get the JWT token from the server
+function get_token {
+    TOKEN=$(curl -s --request POST --data '{"user": "test", "password": "prueba123"}' http://127.0.0.1:8000/login | jq -r '.token')
+}
+
+
+################################################################################
+#                                                                              #
+#                                                                              #
+#                                 E V E N T S                                  #
+#                                                                              #
+#                                                                              #
+################################################################################
+
+# Adds test data
+function add_event {
+    echo "Adding ${JSON_EVENT_FILE}"
+    curl -s -X POST -H "Authorization: Bearer ${TOKEN}" \
+        -H 'Content-type: application/json' \
+        -d @${DATA_DIR}/${JSON_EVENT_FILE} ${HOST}/applicants/add
+    echo
+}
+
+# Get venue list
+function list_event {
+    curl -s http://127.0.0.1:8000/applicants
+}
+
+# Get venue list
+function get_event {
+    UUID=$1
+    echo "Getting event: ${UUID}"
+    curl -s http://127.0.0.1:8000/applicants/${UUID} | jq
+    echo
+}
+
+# Delete venue
+function delete_event {
+    UUID=$1
+    echo "Deleting event: ${UUID}"
+    #curl -X DELETE -s http://127.0.0.1:8000/applicants/${UUID} | jq
+    curl -X DELETE  -H "Authorization: Bearer ${TOKEN}" \
+        -s http://127.0.0.1:8000/applicants/${UUID}
+    echo
+}
+
+################################################################################
+#                                                                              #
+#                                                                              #
+#                                 U S E R S                                    #
+#                                                                              #
+#                                                                              #
+################################################################################
+
+# Add test user
+function add_user {
+    echo "Adding Test user ${JSON_USER_FILE}"
+    curl -s -X POST -H "Authorization: Bearer ${TOKEN}" \
+        -H 'Content-type: application/json' \
+        -d @${DATA_DIR}/${JSON_USER_FILE} ${HOST}/users/add
+    echo
+}
+
+# Get venue list
+function list_user {
+    curl -s http://127.0.0.1:8000/users
+}
+
+# Get venue list
+function get_user {
+    UUID=$1
+    echo "Getting venue: ${UUID}"
+    curl -s http://127.0.0.1:8000/users/${UUID} | jq
+    echo
+}
+
+
+
+
+if [[ $1 == "" ]]; then
+    usage
+fi
+
+# Get the JWT authentication token
+get_token
+
+case $1 in
+      applicants)
+            applicants $2 $3
+        ;;
+      tokens)
+            tokens $2 $3
+        ;;
+        *) usage
+esac
