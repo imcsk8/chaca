@@ -17,6 +17,12 @@ db: data
 		-v ./data:/var/lib/postgresql/data:U,Z                   \
 		-p 127.0.0.1:9432:5432 ghcr.io/enterprisedb/postgresql:16
 
+clean_db:
+	utils/drop_db.sh
+
+bootstrap: db
+	utils/init_db.sh
+
 run: dirs db
 	cargo run
 
