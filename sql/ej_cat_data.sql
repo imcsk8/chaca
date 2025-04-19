@@ -11,7 +11,7 @@ BEGIN;
 COMMIT;
 
 BEGIN;
-\copy cat_Positions (id, male_name, female_name) FROM '../csv/posiciones.csv' DELIMITER ':' CSV;
+\copy cat_Positions (id, cargo, male_name, female_name, long_name) FROM '../csv/posiciones.csv' DELIMITER ':' CSV;
 COMMIT;
 
 BEGIN;
