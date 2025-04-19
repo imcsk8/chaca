@@ -56,8 +56,10 @@ COMMENT ON TABLE cat_Matter IS E'Catálogo de materias judiciales';
 -- DROP TABLE IF EXISTS public."cat_Positions" CASCADE;
 CREATE TABLE IF NOT EXISTS cat_Positions (
     id INT NOT NULL PRIMARY KEY,
-    male_name TEXT UNIQUE NOT NULL,
-    female_name TEXT UNIQUE NOT NULL
+    cargo TEXT NOT NULL,
+    male_name TEXT NOT NULL,
+    female_name TEXT NOT NULL,
+    long_name TEXT NOT NULL
 );
 -- ddl-end --
 COMMENT ON TABLE cat_Positions IS E'Catálogo de posiciones judiciales';
@@ -65,18 +67,11 @@ COMMENT ON TABLE cat_Positions IS E'Catálogo de posiciones judiciales';
 -- Set owner if needed ALTER TABLE public."cat_Positions" OWNER TO postgres;
 -- ddl-end --
 
-CREATE INDEX IF NOT EXISTS idx_male_name ON cat_Positions
+CREATE INDEX IF NOT EXISTS idx_cargo ON cat_Positions
 USING btree
 (
-    male_name
+    cargo
 );
-
-CREATE INDEX IF NOT EXISTS idx_female_name ON cat_Positions
-USING btree
-(
-    female_name
-);
-
 
 -- object: public."cat_Poder" | type: TABLE --
 CREATE TABLE IF NOT EXISTS cat_Poder (
@@ -114,6 +109,24 @@ ENUM ('HOMBRE','MUJER');
 -- Set owner if needed ALTER TYPE public.sexo OWNER TO postgres;
 -- ddl-end --
 
+-- object: public.ambito_eleccion | type: TYPE --
+DROP TYPE IF EXISTS ambito_eleccion CASCADE;
+CREATE TYPE ambito_eleccion AS
+ENUM ('DISTRITO JUDICIAL','ESTATAL','FEDERAL');
+-- ddl-end --
+-- Set owner if needed ALTER TYPE public.sexo OWNER TO postgres;
+-- ddl-end --
+
+-- object: public.ambito_eleccion | type: TYPE --
+DROP TYPE IF EXISTS rango_edad CASCADE;
+CREATE TYPE rango_edad AS
+ENUM ('N/D', '21-29', '30-39',
+	  '40-49', '50-59', '60+'
+);
+-- ddl-end --
+-- Set owner if needed ALTER TYPE public.sexo OWNER TO postgres;
+-- ddl-end --
+
 -- object: public."cat_District" | type: TABLE --
 -- DROP TABLE IF EXISTS public."cat_District" CASCADE;
 CREATE TABLE IF NOT EXISTS cat_District (
@@ -146,31 +159,99 @@ USING btree
 
 -- ddl-end --
 
--- object: public."Applicant" | type: TABLE --
--- DROP TABLE IF EXISTS public."Applicant" CASCADE;
-CREATE TABLE IF NOT EXISTS Applicant (
-    id SERIAL PRIMARY KEY,
-    uuid uuid DEFAULT gen_random_uuid() NOT NULL,
-    fullname text NOT NULL,
-    firstname text,
-    middlename text,
-    pat_surname text,
-    mat_surname text,
-    poder uuid NOT NULL REFERENCES cat_Poder(uuid),
-    district int REFERENCES cat_District(id),
+-- object: public."Candidate" | type: TABLE --
+-- DROP TABLE IF EXISTS public."Candidate" CASCADE;
+
+CREATE TABLE IF NOT EXISTS Candidate (
+	-- NO CSV
+    id uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    external_uuid uuid, -- IEE
+	external_id INT,    -- INE
     state INT NOT NULL REFERENCES cat_State(id_inegi),
-    matter uuid NOT NULL REFERENCES cat_Matter(uuid),
+
+	-- CSV: TIPO DE CANDIDATURA
+	-- JSON: cargo
+    position INT NOT NULL REFERENCES cat_Positions(id),
+
+	-- CSV: DISTRITO
+	-- JSON: distrito
+    district int REFERENCES cat_District(id),
+
+	-- CSV: VÍA DE POSTULACIÓN
+	-- JSON: actorPolitico
+    poder uuid NOT NULL REFERENCES cat_Poder(uuid),
+
+	-- CSV: N/A
+	-- JSON: propietario
+	fullname text NOT NULL,
+
+	-- CSV: MATERIA
+	-- JSON: materia
+    matter uuid REFERENCES cat_Matter(uuid),
+
+	-- CSV: NÚMERO ÚNICO DE CANDIDATURA EN BOLETA
+	-- JSON: numeroUnicoBoleta 
+	num_boleta int not null,
+
+	-- CSV: SEXO
+	-- JSON:
     sex sexo,
-    position INT NOT NULL REFERENCES cat_Positions(id)
+
+	-- CSV: N/A
+	-- JSON: datosGenerales.edad
+	age INT NOT NULL,
+
+	-- CSV: N/A
+	-- JSON: datosGenerales.paginaWeb
+	website text,
+
+	-- CSV: TELÉFONO PÚBLICO DE CONTACTO
+	-- JSON: mediosDeContacto.telefono
+	telephone VARCHAR(20),
+
+	-- CSV: CORREO ELECTRÓNICO PÚBLICO
+	-- JSON: mediosDeContacto.correo
+	email VARCHAR(50),
+
+	-- CSV: N/A
+	-- JSON: imageUrl
+	image_url text,
+
+	-- CSV: N/A
+	-- JSON: curriculumUrl
+	curriculum_url text,
+
+	-- CSV: N/A
+	-- JSON: videoUrl
+	video_url text,
+
+	-- CSV: N/A
+	-- JSON: candidatoUrl
+	candidato_url text,
+
+	-- CSV: ÁMBITO DE ELECCIÓN
+	-- JSON: N/A
+	ambito ambito_eleccion,
+
+	-- CSV: NOMBRE (S)
+    firstname text,
+
+	-- CSV: PRIMER APELLIDO
+    paterno text,
+
+	-- CSV: SEGUNDO APELLIDO
+    materno text,
+
+	raw_data jsonb
 );
 -- ddl-end --
--- Set owner if needed ALTER TABLE public."Applicant" OWNER TO postgres;
+-- Set owner if needed ALTER TABLE public."Candidate" OWNER TO postgres;
 -- ddl-end --
 
 
--- object: idx_applicant_fullname | type: INDEX --
--- DROP INDEX IF EXISTS public.idx_applicant_fullname CASCADE;
-CREATE INDEX IF NOT EXISTS idx_applicant_fullname ON Applicant
+-- object: idx_candidate_fullname | type: INDEX --
+-- DROP INDEX IF EXISTS public.idx_candidate_fullname CASCADE;
+CREATE INDEX IF NOT EXISTS idx_candidate_fullname ON Candidate
 USING btree
 (
     fullname
@@ -178,52 +259,60 @@ USING btree
 -- ddl-end --
 
 
--- object: idx_applicant_name | type: INDEX --
--- DROP INDEX IF EXISTS public.idx_applicant_name CASCADE;
-CREATE INDEX IF NOT EXISTS idx_applicant_name ON Applicant
+-- object: idx_candidate_name | type: INDEX --
+-- DROP INDEX IF EXISTS public.idx_candidate_name CASCADE;
+CREATE INDEX IF NOT EXISTS idx_candidate_name ON Candidate
 USING btree
 (
     firstname
 );
 -- ddl-end --
 
--- object: idx_applicant_middle | type: INDEX --
--- DROP INDEX IF EXISTS public.idx_applicant_middle CASCADE;
-CREATE INDEX IF NOT EXISTS idx_applicant_middle ON Applicant
+-- object: idx_candidate_pat | type: INDEX --
+-- DROP INDEX IF EXISTS public.idx_candidate_pat CASCADE;
+CREATE INDEX IF NOT EXISTS idx_candidate_pat ON Candidate
 USING btree
 (
-    middlename
+    paterno
 );
 -- ddl-end --
 
--- object: idx_applicant_pat | type: INDEX --
--- DROP INDEX IF EXISTS public.idx_applicant_pat CASCADE;
-CREATE INDEX IF NOT EXISTS idx_applicant_pat ON Applicant
+-- object: idx_candidate_mat | type: INDEX --
+-- DROP INDEX IF EXISTS public.idx_candidate_mat CASCADE;
+CREATE INDEX IF NOT EXISTS idx_candidate_mat ON Candidate
 USING btree
 (
-    pat_surname
+    materno
 );
 -- ddl-end --
 
--- object: idx_applicant_mat | type: INDEX --
--- DROP INDEX IF EXISTS public.idx_applicant_mat CASCADE;
-CREATE INDEX IF NOT EXISTS idx_applicant_mat ON Applicant
-USING btree
-(
-    mat_surname
+-- CSV: REDES SOCIALES DE CONTACTO PÚBLICOS
+-- JSON: mediosDeContacto.redesSociales
+CREATE TABLE IF NOT EXISTS candidate_social_media (
+    id SERIAL PRIMARY KEY,
+    candidate_id UUID REFERENCES candidate(id) ON DELETE CASCADE,
+    url TEXT NOT NULL
 );
--- ddl-end --
 
--- object: idx_applicant_fullname | type: INDEX --
--- DROP INDEX IF EXISTS public.idx_applicant_fullname CASCADE;
-CREATE INDEX IF NOT EXISTS idx_applicant_fullname ON Applicant
-USING btree
-(
-    firstname,
-    middlename,
-    pat_surname,
-    mat_surname
+CREATE INDEX IF NOT EXISTS idx_candidate_social_media_candidate_id ON 
+	candidate_social_media(candidate_id);
+
+-- CSV: OCUPACIÓN
+-- CSV: GRADO MÁXIMO DE ESTUDIOS
+-- CSV: HISTORIA JURÍDICA PROFESIONAL Y LABORAL
+-- CSV: TRAYECTORIA ACÁDEMICA
+-- CSV: MOTIVACIÓN PARA OCUPAR UN CARGO PÚBLICO
+-- CSV: VISIÓN ACERCA DE LA FUNCIÓN JURISDICCIONAL E IMPARTICIÓN DE JUSTICIA
+-- CSV: PROPUESTA DE MEJORA A LA FUNCIÓN JURISDICCIONAL  
+-- JSON: extras
+CREATE TABLE candidate_extras (
+    id SERIAL PRIMARY KEY,
+    candidate_id UUID REFERENCES candidate(id) ON DELETE CASCADE,
+    question TEXT NOT NULL,
+    answer TEXT NOT NULL
 );
--- ddl-end --
+
+CREATE INDEX IF NOT EXISTS idx_candidate_extras_candidate_id ON
+	candidate_extras(candidate_id);
 
 COMMIT;
