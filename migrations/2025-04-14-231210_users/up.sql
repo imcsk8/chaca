@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS Users (
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     last_login TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (oauth_provider, oauth_id)
+    UNIQUE (oauth_provider, id)
 );
 
 
