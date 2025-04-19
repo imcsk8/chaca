@@ -13,14 +13,29 @@ psql $DSN -c '\ir ../sql/ej_schema.sql'
 echo "Loading database catalogs"
 psql $MYDSN -c '\ir ../sql/ej_cat_data.sql'
 
-echo "Loading Applicants"
+echo "Loading Candidates"
 
-echo "Jueces"
-psql $MYDSN -c '\ir ../sql/jueces_data.sql'
+# Prepare data:
 
-echo "Magistrados"
-psql $MYDSN -c '\ir ../sql/magistrados_data.sql'
+cd ../json
+jq -c '.[]'  cuu_candidates.json > cuu_candidates_raw.json
+cat << 'EOF' > sanitize.jq
+def sanitize:
+  walk(
+    if type == "string"
+    then
+      gsub("\\\\"; "\\\\\\\\") |         # Escape backslashes
+      gsub("\r"; "\\\\r")     |          # Escape carriage return
+      gsub("\n"; "\\\\n")     |          # Escape newline
+      gsub("\t"; "\\\\t")                 # Escape tab
+    else .
+    end
+  );
+sanitize
+EOF
 
-echo "DISCIPLINA"
-psql $MYDSN -c '\ir ../sql/tdj_data.sql'
+jq -c -f sanitize.jq cuu_candidates_raw.json | sed 's/\\"//g' > cuu_candidates_clean.jsonl 
+
+echo "Candidatos"
+psql $MYDSN -c '\ir ../sql/candidatos_data.sql'
 
