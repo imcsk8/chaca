@@ -8,12 +8,13 @@ use rocket_dyn_templates::Template;
 
 type Result<T, E = Debug<diesel::result::Error>> = std::result::Result<T, E>;
 
+pub mod candidates;
 pub mod auth;
-pub mod claims;
 pub mod db;
+pub mod claims;
 pub mod models;
 pub mod schema;
-pub mod applicants;
+pub mod types;
 
 pub static STATIC_FILES_DIR: &str = "www/static";
 
@@ -22,9 +23,9 @@ fn rocket() -> _ {
     rocket::build()
 		.mount("/", routes![auth::login])
         .mount(
-            "/applicants",
-            routes![applicants::add, applicants::delete, applicants::get_json,
-                applicants::get_html, applicants::list],
+            "/candidates",
+            routes![candidates::add, candidates::delete, candidates::get_json,
+                candidates::get_html, candidates::list],
         )
         .mount("/public", FileServer::from(STATIC_FILES_DIR))
         .attach(Template::fairing())
