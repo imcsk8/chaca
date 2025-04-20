@@ -18,24 +18,51 @@ CREATE TABLE IF NOT EXISTS comments (
     updated_at TIMESTAMP WITH TIME ZONE,
     is_edited BOOLEAN DEFAULT FALSE,
     is_hidden BOOLEAN DEFAULT FALSE,
-    likes_count INTEGER DEFAULT 0,
-    
-    INDEX idx_resource (resource_type, resource_id),
-    INDEX idx_user (user_id),
-    INDEX idx_parent (parent_comment_id)
+    likes_count INTEGER DEFAULT 0
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_resource ON comments
+USING btree
+(
+    resource_type,
+    resource_id
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_user_id ON comments
+USING btree
+(
+    parent_comment_id
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_parent ON comments
+USING btree
+(
+    user_id
+);
+
 
 CREATE TABLE IF NOT EXISTS comment_reactions (
     reaction_id SERIAL PRIMARY KEY,
     comment_id INTEGER NOT NULL REFERENCES comments(comment_id) ON DELETE CASCADE,
-    user_id INTEGER NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     reaction_type reaction NOT NULL,  -- like, love, laugh, etc.
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     
-    UNIQUE (comment_id, user_id, reaction_type),
-    INDEX idx_comment (comment_id),
-    INDEX idx_user (user_id)
+    UNIQUE (comment_id, user_id, reaction_type)
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_comment ON comment_reactions
+USING btree
+(
+    comment_id
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_comment_reactions_user ON comment_reactions
+USING btree
+(
+    user_id
+);
+
 
 
 -- *****************************************************************************
