@@ -65,7 +65,7 @@ USING btree
 -- object: public."cat_Poder" | type: TABLE --
 CREATE TABLE IF NOT EXISTS cat_Poder (
     uuid uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-	short_name text,
+    short_name text,
     name text,
     UNIQUE(short_name, name)
 );
@@ -142,86 +142,86 @@ USING btree
 -- DROP TABLE IF EXISTS public."Candidate" CASCADE;
 
 CREATE TABLE IF NOT EXISTS Candidate (
-	-- NO CSV
+    -- NO CSV
     id uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     external_uuid uuid, -- IEE
-	external_id INT,    -- INE
+    external_id INT,    -- INE
     state INT NOT NULL REFERENCES cat_State(id_inegi),
 
-	-- CSV: TIPO DE CANDIDATURA
-	-- JSON: cargo
+    -- CSV: TIPO DE CANDIDATURA
+    -- JSON: cargo
     position INT NOT NULL REFERENCES cat_Positions(id),
 
-	-- CSV: DISTRITO
-	-- JSON: distrito
+    -- CSV: DISTRITO
+    -- JSON: distrito
     district int REFERENCES cat_District(id),
 
-	-- CSV: VÍA DE POSTULACIÓN
-	-- JSON: actorPolitico
+    -- CSV: VÍA DE POSTULACIÓN
+    -- JSON: actorPolitico
     poder uuid NOT NULL REFERENCES cat_Poder(uuid),
 
-	-- CSV: N/A
-	-- JSON: propietario
-	fullname text NOT NULL,
+    -- CSV: N/A
+    -- JSON: propietario
+    fullname text NOT NULL,
 
-	-- CSV: MATERIA
-	-- JSON: materia
+    -- CSV: MATERIA
+    -- JSON: materia
     matter uuid REFERENCES cat_Matter(uuid),
 
-	-- CSV: NÚMERO ÚNICO DE CANDIDATURA EN BOLETA
-	-- JSON: numeroUnicoBoleta 
-	num_boleta int not null,
+    -- CSV: NÚMERO ÚNICO DE CANDIDATURA EN BOLETA
+    -- JSON: numeroUnicoBoleta 
+    num_boleta int not null,
 
-	-- CSV: SEXO
-	-- JSON:
+    -- CSV: SEXO
+    -- JSON:
     sex sexo,
 
-	-- CSV: N/A
-	-- JSON: datosGenerales.edad
-	age INT NOT NULL,
+    -- CSV: N/A
+    -- JSON: datosGenerales.edad
+    age INT NOT NULL,
 
-	-- CSV: N/A
-	-- JSON: datosGenerales.paginaWeb
-	website text,
+    -- CSV: N/A
+    -- JSON: datosGenerales.paginaWeb
+    website text,
 
-	-- CSV: TELÉFONO PÚBLICO DE CONTACTO
-	-- JSON: mediosDeContacto.telefono
-	telephone VARCHAR(20),
+    -- CSV: TELÉFONO PÚBLICO DE CONTACTO
+    -- JSON: mediosDeContacto.telefono
+    telephone VARCHAR(20),
 
-	-- CSV: CORREO ELECTRÓNICO PÚBLICO
-	-- JSON: mediosDeContacto.correo
-	email VARCHAR(50),
+    -- CSV: CORREO ELECTRÓNICO PÚBLICO
+    -- JSON: mediosDeContacto.correo
+    email VARCHAR(50),
 
-	-- CSV: N/A
-	-- JSON: imageUrl
-	image_url text,
+    -- CSV: N/A
+    -- JSON: imageUrl
+    image_url text,
 
-	-- CSV: N/A
-	-- JSON: curriculumUrl
-	curriculum_url text,
+    -- CSV: N/A
+    -- JSON: curriculumUrl
+    curriculum_url text,
 
-	-- CSV: N/A
-	-- JSON: videoUrl
-	video_url text,
+    -- CSV: N/A
+    -- JSON: videoUrl
+    video_url text,
 
-	-- CSV: N/A
-	-- JSON: candidatoUrl
-	candidato_url text,
+    -- CSV: N/A
+    -- JSON: candidatoUrl
+    candidato_url text,
 
-	-- CSV: ÁMBITO DE ELECCIÓN
-	-- JSON: N/A
-	ambito ambito_eleccion,
+    -- CSV: ÁMBITO DE ELECCIÓN
+    -- JSON: N/A
+    ambito ambito_eleccion,
 
-	-- CSV: NOMBRE (S)
+    -- CSV: NOMBRE (S)
     firstname text,
 
-	-- CSV: PRIMER APELLIDO
+    -- CSV: PRIMER APELLIDO
     paterno text,
 
-	-- CSV: SEGUNDO APELLIDO
+    -- CSV: SEGUNDO APELLIDO
     materno text,
 
-	raw_data jsonb
+    raw_data jsonb
 );
 -- ddl-end --
 -- Set owner if needed ALTER TABLE public."Candidate" OWNER TO postgres;
@@ -274,7 +274,7 @@ CREATE TABLE IF NOT EXISTS candidate_social_media (
 );
 
 CREATE INDEX IF NOT EXISTS idx_candidate_social_media_candidate_id ON 
-	candidate_social_media(candidate_id);
+    candidate_social_media(candidate_id);
 
 -- CSV: OCUPACIÓN
 -- CSV: GRADO MÁXIMO DE ESTUDIOS
@@ -292,6 +292,6 @@ CREATE TABLE candidate_extras (
 );
 
 CREATE INDEX IF NOT EXISTS idx_candidate_extras_candidate_id ON
-	candidate_extras(candidate_id);
+    candidate_extras(candidate_id);
 
 COMMIT;
