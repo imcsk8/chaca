@@ -2,7 +2,7 @@
 
 DROP TYPE IF EXISTS reaction CASCADE;
 CREATE TYPE reaction AS
-ENUM ('LIKE','LOVE','LAUGH','DISLIKE','BAD','DANGER');
+ENUM ('NA', 'LIKE','LOVE','LAUGH','DISLIKE','BAD','DANGER');
 
 
 -- Comments
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS comment_reactions (
     reaction_id SERIAL PRIMARY KEY,
     comment_id INTEGER NOT NULL REFERENCES comments(comment_id) ON DELETE CASCADE,
     user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    reaction_type reaction NOT NULL,  -- like, love, laugh, etc.
+    reaction_type reaction NOT NULL DEFAULT 'NA',  -- like, love, laugh, etc.
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     
     UNIQUE (comment_id, user_id, reaction_type)
