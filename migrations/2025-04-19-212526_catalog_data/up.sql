@@ -1,10 +1,6 @@
--- C A T A L O G  D A T A
-
 --
 -- Data for Name: cat_state; Type: TABLE DATA; Schema: public; Owner: postgres
 --
-
-BEGIN;
 
 INSERT INTO public.cat_state (id_inegi, name) VALUES (0, 'Federal');
 INSERT INTO public.cat_state (id_inegi, name) VALUES (1, 'Aguascalientes');
@@ -66,28 +62,28 @@ INSERT INTO public.cat_district (id, name, id_inegi) VALUES (14, 'RAYON', 8);
 -- Data for Name: cat_matter; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.cat_matter (uuid, name) VALUES ('5995c9d5-636a-4acd-9530-7c6e008d071c', 'NA');
-INSERT INTO public.cat_matter (uuid, name) VALUES ('9bc5a203-8488-4b18-857e-5d5c6d44a1b2', 'CIVIL');
-INSERT INTO public.cat_matter (uuid, name) VALUES ('cf44ee41-201a-485c-a8b5-000940497cf9', 'DISCIPLINARIO');
-INSERT INTO public.cat_matter (uuid, name) VALUES ('b77c3ef4-5241-440b-99e1-1b22cdc17535', 'FAMILIAR');
-INSERT INTO public.cat_matter (uuid, name) VALUES ('52cbd99b-8187-46e2-8e0e-e5712ce7ae25', 'LABORAL');
-INSERT INTO public.cat_matter (uuid, name) VALUES ('2a9cf1ba-4d5d-4a5c-807f-da7259a081d3', 'MENOR');
-INSERT INTO public.cat_matter (uuid, name) VALUES ('034db92e-1a51-44c2-be4f-4743814d4c22', 'MIXTA');
-INSERT INTO public.cat_matter (uuid, name) VALUES ('684527fe-952d-476f-b4a4-51d9ac4175ce', 'PENAL');
+INSERT INTO public.cat_matter (uuid, name) VALUES ('44ebdda1-0622-46db-9d7c-14fee2cad40c', 'NA');
+INSERT INTO public.cat_matter (uuid, name) VALUES ('bd829a6a-9219-47f3-ae12-06be7be407b9', 'CIVIL');
+INSERT INTO public.cat_matter (uuid, name) VALUES ('5d262a6f-1a5c-4964-b086-b271f0302e66', 'DISCIPLINARIO');
+INSERT INTO public.cat_matter (uuid, name) VALUES ('cc1d47c3-f547-47f5-9bf4-e9058e50c825', 'FAMILIAR');
+INSERT INTO public.cat_matter (uuid, name) VALUES ('586dec54-1bce-4fd9-a1ac-2a65013362c4', 'LABORAL');
+INSERT INTO public.cat_matter (uuid, name) VALUES ('118f6595-7be3-4c26-85a5-c94c681ab5eb', 'MENOR');
+INSERT INTO public.cat_matter (uuid, name) VALUES ('232951c0-2afd-48ae-a19a-1407a0831567', 'MIXTA');
+INSERT INTO public.cat_matter (uuid, name) VALUES ('4dccab04-adc2-4f75-a0c2-48fc5fedf332', 'PENAL');
 
 
 --
 -- Data for Name: cat_poder; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.cat_poder (uuid, short_name, name) VALUES ('6e1cbb68-6073-4e47-ba92-02de52b52b41', 'PE', 'PODER EJECUTIVO');
-INSERT INTO public.cat_poder (uuid, short_name, name) VALUES ('312a1cec-85a5-4e66-a9e1-804d8c8de637', 'PL', 'PODER LEGISLATIVO');
-INSERT INTO public.cat_poder (uuid, short_name, name) VALUES ('151aead6-2e95-4e3c-bd27-f77d9e08375e', 'PJ', 'PODER JUDICIAL');
-INSERT INTO public.cat_poder (uuid, short_name, name) VALUES ('cb916a97-fdd1-4bab-b2e5-bc64585340bd', 'EF', 'EN FUNCIONES');
-INSERT INTO public.cat_poder (uuid, short_name, name) VALUES ('d0dd1561-9f6a-46ce-99e9-3bfb5959322b', 'PEL', 'PODERES EJECUTIVO Y LEGISLATIVO');
-INSERT INTO public.cat_poder (uuid, short_name, name) VALUES ('8491e45d-397b-4f67-bbfc-53e21bb53bf1', 'PEJ', 'PODERES EJECUTIVO Y JUDICIAL');
-INSERT INTO public.cat_poder (uuid, short_name, name) VALUES ('43aa1a46-f9fa-4e6d-8a77-57d3a73d7e10', 'PLJ', 'PODERES LEGISLATIVO Y JUDICIAL');
-INSERT INTO public.cat_poder (uuid, short_name, name) VALUES ('242b4b62-f848-4c9c-af95-2ad0253b5aa3', 'PELJ', 'PODERES EJECUTIVO, LEGISLATIVO Y JUDICIAL');
+INSERT INTO public.cat_poder (uuid, short_name, name) VALUES ('7c29d650-0bb8-4412-8b09-d74e20bd3052', 'PE', 'PODER EJECUTIVO');
+INSERT INTO public.cat_poder (uuid, short_name, name) VALUES ('e5fa9cae-06f4-4c37-904e-511924019ece', 'PL', 'PODER LEGISLATIVO');
+INSERT INTO public.cat_poder (uuid, short_name, name) VALUES ('c7ef7124-0ff3-4084-8d6d-cd246ebb0d6c', 'PJ', 'PODER JUDICIAL');
+INSERT INTO public.cat_poder (uuid, short_name, name) VALUES ('f4a69bea-1806-475f-b5a4-6bb0c927c449', 'EF', 'EN FUNCIONES');
+INSERT INTO public.cat_poder (uuid, short_name, name) VALUES ('b6b88996-aa72-4a91-90df-2b4b724b31ff', 'PEL', 'PODERES EJECUTIVO Y LEGISLATIVO');
+INSERT INTO public.cat_poder (uuid, short_name, name) VALUES ('431f3cd0-7d45-4c17-a8a5-60be82503f56', 'PEJ', 'PODERES EJECUTIVO Y JUDICIAL');
+INSERT INTO public.cat_poder (uuid, short_name, name) VALUES ('3226fc85-7a07-4fb4-9ade-1c12c8c1d129', 'PLJ', 'PODERES LEGISLATIVO Y JUDICIAL');
+INSERT INTO public.cat_poder (uuid, short_name, name) VALUES ('88ab0482-9d38-4b5c-849e-8ebc4ec22035', 'PELJ', 'PODERES EJECUTIVO, LEGISLATIVO Y JUDICIAL');
 
 
 --
@@ -100,4 +96,3 @@ INSERT INTO public.cat_positions (id, cargo, male_name, female_name, long_name) 
 INSERT INTO public.cat_positions (id, cargo, male_name, female_name, long_name) VALUES (4, 'MTDJ', 'MAGISTRADO', 'MAGISTRADA', 'DE TRIBUNAL DE DISCIPLINA  JUDICIAL');
 INSERT INTO public.cat_positions (id, cargo, male_name, female_name, long_name) VALUES (5, 'MSCJN', 'MINISTRO', 'MINISTRA', 'DE LA SUPREMA CORTE DE JUSTICIA DE LA NACIÓN');
 
-COMMIT;
