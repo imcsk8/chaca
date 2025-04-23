@@ -93,7 +93,7 @@ USING btree
 -- object: public.sexo | type: TYPE --
 DROP TYPE IF EXISTS sexo CASCADE;
 CREATE TYPE sexo AS
-ENUM ('HOMBRE','MUJER');
+ENUM ('ND', 'HOMBRE','MUJER');
 -- ddl-end --
 -- Set owner if needed ALTER TYPE public.sexo OWNER TO postgres;
 -- ddl-end --
@@ -101,7 +101,7 @@ ENUM ('HOMBRE','MUJER');
 -- object: public.ambito_eleccion | type: TYPE --
 DROP TYPE IF EXISTS ambito_eleccion CASCADE;
 CREATE TYPE ambito_eleccion AS
-ENUM ('DISTRITO JUDICIAL','ESTATAL','FEDERAL');
+ENUM ('ND', 'DISTRITO JUDICIAL','ESTATAL','FEDERAL');
 -- ddl-end --
 -- Set owner if needed ALTER TYPE public.sexo OWNER TO postgres;
 -- ddl-end --
@@ -174,7 +174,7 @@ CREATE TABLE IF NOT EXISTS Candidate (
 
     -- CSV: SEXO
     -- JSON:
-    sex sexo,
+    sex sexo NOT NULL DEFAULT 'ND',
 
     -- CSV: N/A
     -- JSON: datosGenerales.edad
@@ -210,7 +210,7 @@ CREATE TABLE IF NOT EXISTS Candidate (
 
     -- CSV: ÁMBITO DE ELECCIÓN
     -- JSON: N/A
-    ambito ambito_eleccion,
+    ambito ambito_eleccion NOT NULL DEFAULT 'ND',
 
     -- CSV: NOMBRE (S)
     firstname text,
