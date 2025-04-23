@@ -19,6 +19,7 @@ pub struct ReactionType;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, AsExpression, FromSqlRow, Serialize, Deserialize)]
 #[diesel(sql_type = ReactionType)]
 pub enum Reaction {
+	NA,
     Like,
     Love,
     Laugh,
@@ -31,6 +32,7 @@ pub enum Reaction {
 impl ToSql<ReactionType, Pg> for Reaction {
     fn to_sql<'b>(&'b self, out: &mut Output<'b, '_, Pg>) -> serialize::Result {
         match *self {
+            Reaction::NA => out.write_all(b"NA")?,
             Reaction::Like => out.write_all(b"LIKE")?,
             Reaction::Love => out.write_all(b"LOVE")?,
             Reaction::Laugh => out.write_all(b"LAUGH")?,
@@ -46,6 +48,7 @@ impl ToSql<ReactionType, Pg> for Reaction {
 impl FromSql<ReactionType, Pg> for Reaction {
     fn from_sql(value: PgValue<'_>) -> deserialize::Result<Self> {
         match value.as_bytes() {
+            b"NA" => Ok(Reaction::NA),
             b"LIKE" => Ok(Reaction::Like),
             b"LOVE" => Ok(Reaction::Love),
             b"LAUGH" => Ok(Reaction::Laugh),
@@ -68,13 +71,14 @@ impl From<String> for Reaction {
 impl From<&str> for Reaction {
     fn from(item: &str) -> Self {
         match item {
+            "NA" => Reaction::NA,
             "LIKE" => Reaction::Like,
             "LOVE" => Reaction::Love,
             "LAUGH" => Reaction::Laugh,
             "DISLIKE" => Reaction::Dislike,
             "BAD" => Reaction::Bad,
             "DANGER" => Reaction::Danger,
-            &_ => panic!("Reaction solo puede ser: LIKE, LOVE, LAUGH, DISLIKE, BAD, DANGER"),
+            &_ => panic!("Reaction solo puede ser: NA, LIKE, LOVE, LAUGH, DISLIKE, BAD, DANGER"),
         }
     }
 }
@@ -83,6 +87,7 @@ impl From<&str> for Reaction {
 impl ToString for Reaction {
     fn to_string(&self) -> String {
         match *self {
+            Reaction::NA => String::from("NA"),
             Reaction::Like => String::from("LIKE"),
             Reaction::Love => String::from("LOVE"),
             Reaction::Laugh => String::from("LAUGH"),
@@ -108,6 +113,7 @@ impl Expression for SexoType {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, AsExpression, FromSqlRow, Serialize, Deserialize)]
 #[diesel(sql_type = SexoType)]
 pub enum Sexo {
+	ND,
     Hombre,
     Mujer,
 }
@@ -116,6 +122,7 @@ pub enum Sexo {
 impl ToSql<SexoType, Pg> for Sexo {
     fn to_sql<'b>(&'b self, out: &mut Output<'b, '_, Pg>) -> serialize::Result {
         match *self {
+            Sexo::ND => out.write_all(b"ND")?,
             Sexo::Hombre => out.write_all(b"HOMBRE")?,
             Sexo::Mujer => out.write_all(b"MUJER")?,
         }
@@ -126,6 +133,7 @@ impl ToSql<SexoType, Pg> for Sexo {
 impl FromSql<SexoType, Pg> for Sexo {
     fn from_sql(value: PgValue<'_>) -> deserialize::Result<Self> {
         match value.as_bytes() {
+            b"ND" => Ok(Sexo::ND),
             b"HOMBRE" => Ok(Sexo::Hombre),
             b"MUJER" => Ok(Sexo::Mujer),
             _ => Err("Unrecognized enum variant".into()),
@@ -145,6 +153,7 @@ impl From<String> for Sexo {
 impl From<&str> for Sexo {
     fn from(item: &str) -> Self {
         match item {
+            "ND" => Sexo::ND,
             "HOMBRE" => Sexo::Hombre,
             "MUJER" => Sexo::Mujer,
             &_ => panic!("Sexo solo puede ser Hombre o Mujer"),
@@ -156,6 +165,7 @@ impl From<&str> for Sexo {
 impl ToString for Sexo {
     fn to_string(&self) -> String {
         match *self {
+            Sexo::ND => String::from("ND"),
             Sexo::Hombre => String::from("HOMBRE"),
             Sexo::Mujer => String::from("MUJER"),
         }
@@ -172,6 +182,7 @@ pub struct AmbitoEleccionType;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, AsExpression, FromSqlRow, Serialize, Deserialize)]
 #[diesel(sql_type = AmbitoEleccionType)]
 pub enum AmbitoEleccion {
+    ND,
     DistritoJudicial,
     Estatal,
     Federal,
@@ -181,6 +192,7 @@ pub enum AmbitoEleccion {
 impl ToSql<AmbitoEleccionType, Pg> for AmbitoEleccion {
     fn to_sql<'b>(&'b self, out: &mut Output<'b, '_, Pg>) -> serialize::Result {
         match *self {
+            AmbitoEleccion::ND => out.write_all(b"ND")?,
             AmbitoEleccion::DistritoJudicial => out.write_all(b"DISTRITO JUDICIAL")?,
             AmbitoEleccion::Estatal => out.write_all(b"ESTATAL")?,
             AmbitoEleccion::Federal => out.write_all(b"FEDERAL")?,
@@ -193,6 +205,7 @@ impl ToSql<AmbitoEleccionType, Pg> for AmbitoEleccion {
 impl FromSql<AmbitoEleccionType, Pg> for AmbitoEleccion {
     fn from_sql(value: PgValue<'_>) -> deserialize::Result<Self> {
         match value.as_bytes() {
+            b"ND" => Ok(AmbitoEleccion::ND),
             b"DISTRITO JUDICIAL" => Ok(AmbitoEleccion::DistritoJudicial),
             b"ESTATAL" => Ok(AmbitoEleccion::Estatal),
             b"FEDERAL" => Ok(AmbitoEleccion::Federal),
@@ -212,12 +225,12 @@ impl From<String> for AmbitoEleccion {
 impl From<&str> for AmbitoEleccion {
     fn from(item: &str) -> Self {
         match item {
-
+            "ND" => AmbitoEleccion::ND,
             "DISTRITO JUDICIAL" => AmbitoEleccion::DistritoJudicial,
             "ESTATAL" => AmbitoEleccion::Estatal,
             "FEDERAL" => AmbitoEleccion::Federal,
 
-            &_ => panic!("AmbitoEleccion solo puede ser: DISTRITO JUDICIAL, ESTATAL, FEDERAL"),
+            &_ => panic!("AmbitoEleccion solo puede ser: ND, DISTRITO JUDICIAL, ESTATAL, FEDERAL"),
         }
     }
 }
@@ -226,6 +239,7 @@ impl From<&str> for AmbitoEleccion {
 impl ToString for AmbitoEleccion {
     fn to_string(&self) -> String {
         match *self {
+            AmbitoEleccion::ND => String::from("ND"),
             AmbitoEleccion::DistritoJudicial => String::from("DISTRITO JUDICIAL"),
             AmbitoEleccion::Estatal => String::from("ESTATAL"),
             AmbitoEleccion::Federal => String::from("FEDERAL"),
