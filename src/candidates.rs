@@ -1,4 +1,5 @@
 use crate::claims::Claims;
+use chaca_macros::candidate_details;
 use crate::db::*;
 use crate::models::Candidate;
 //use crate::schema::candidate::dsl::*;
@@ -57,75 +58,9 @@ pub async fn list(cdb: ChacaDB) -> Template {
 pub async fn list_all(cdb: ChacaDB) -> Template {
     let results = cdb
         .run(move |connection| {
-            use diesel::sql_types::*;
-            use serde::{Serialize, Deserialize};
-            use diesel::serialize::ToSql;
-            use crate::types::{Sexo, AmbitoEleccion, SexoType, AmbitoEleccionType};
 
-            // Define a structure to hold the joined result
-            #[derive(Debug, QueryableByName, Serialize)]
-            struct CandidateWithDetails {
-                #[diesel(sql_type = Uuid)]
-                id: uuid::Uuid,
-                #[diesel(sql_type = Nullable<Uuid>)]
-                external_uuid: Option<uuid::Uuid>,
-                #[diesel(sql_type = Nullable<Integer>)]
-                external_id: Option<i32>,
-                #[diesel(sql_type = Integer)]
-                state: i32,
-                #[diesel(sql_type = Integer)]
-                position: i32,
-                #[diesel(sql_type = Nullable<Integer>)]
-                district: Option<i32>,
-                #[diesel(sql_type = Uuid)]
-                poder: uuid::Uuid,
-                #[diesel(sql_type = Text)]
-                fullname: String,
-                #[diesel(sql_type = Nullable<Uuid>)]
-                matter: Option<uuid::Uuid>,
-                #[diesel(sql_type = Integer)]
-                num_boleta: i32,
-                #[diesel(sql_type = SexoType)]
-                sex: Sexo,
-                #[diesel(sql_type = Integer)]
-                age: i32,
-                #[diesel(sql_type = Nullable<Text>)]
-                website: Option<String>,
-                #[diesel(sql_type = Nullable<Text>)]
-                telephone: Option<String>,
-                #[diesel(sql_type = Nullable<Text>)]
-                email: Option<String>,
-                #[diesel(sql_type = Nullable<Text>)]
-                image_url: Option<String>,
-                #[diesel(sql_type = Nullable<Text>)]
-                curriculum_url: Option<String>,
-                #[diesel(sql_type = Nullable<Text>)]
-                video_url: Option<String>,
-                #[diesel(sql_type = Nullable<Text>)]
-                candidato_url: Option<String>,
-                #[diesel(sql_type = AmbitoEleccionType)]
-                ambito: AmbitoEleccion,
-                #[diesel(sql_type = Nullable<Text>)]
-                firstname: Option<String>,
-                #[diesel(sql_type = Nullable<Text>)]
-                paterno: Option<String>,
-                #[diesel(sql_type = Nullable<Text>)]
-                materno: Option<String>,
-                #[diesel(sql_type = Nullable<Jsonb>)]
-                raw_data: Option<serde_json::Value>,
-
-                // Additional joined fields
-                #[diesel(sql_type = Text)]
-                state_name: String,
-                #[diesel(sql_type = Text)]
-                position_name: String,
-                #[diesel(sql_type = Nullable<Text>)]
-                district_name: Option<String>,
-                #[diesel(sql_type = Text)]
-                poder_name: String,
-                #[diesel(sql_type = Nullable<Text>)]
-                matter_name: Option<String>,
-            }
+            // Shows the CandidateWithDetails structure and needed modules
+            candidate_details!();
 
             // Build the query with JOINs for all foreign keys
             diesel::sql_query(
@@ -159,77 +94,8 @@ pub async fn list_all(cdb: ChacaDB) -> Template {
 pub async fn list_by_state(state_id: i32, cdb: ChacaDB) -> Template {
     let results = cdb
         .run(move |connection| {
-            use diesel::sql_types::*;
-            use serde::{Serialize, Deserialize};
-            use diesel::serialize::ToSql;
-            use crate::types::{Sexo, AmbitoEleccion, SexoType, AmbitoEleccionType};
-            use diesel::sql_types::Integer;
-
-            // Define a structure to hold the joined result
-            #[derive(Debug, QueryableByName, Serialize)]
-            struct CandidateWithDetails {
-                #[diesel(sql_type = Uuid)]
-                id: uuid::Uuid,
-                #[diesel(sql_type = Nullable<Uuid>)]
-                external_uuid: Option<uuid::Uuid>,
-                #[diesel(sql_type = Nullable<Integer>)]
-                external_id: Option<i32>,
-                #[diesel(sql_type = Integer)]
-                state: i32,
-                #[diesel(sql_type = Integer)]
-                position: i32,
-                #[diesel(sql_type = Nullable<Integer>)]
-                district: Option<i32>,
-                #[diesel(sql_type = Uuid)]
-                poder: uuid::Uuid,
-                #[diesel(sql_type = Text)]
-                fullname: String,
-                #[diesel(sql_type = Nullable<Uuid>)]
-                matter: Option<uuid::Uuid>,
-                #[diesel(sql_type = Integer)]
-                num_boleta: i32,
-                #[diesel(sql_type = SexoType)]
-                sex: Sexo,
-                #[diesel(sql_type = Integer)]
-                age: i32,
-                #[diesel(sql_type = Nullable<Text>)]
-                website: Option<String>,
-                #[diesel(sql_type = Nullable<Text>)]
-                telephone: Option<String>,
-                #[diesel(sql_type = Nullable<Text>)]
-                email: Option<String>,
-                #[diesel(sql_type = Nullable<Text>)]
-                image_url: Option<String>,
-                #[diesel(sql_type = Nullable<Text>)]
-                curriculum_url: Option<String>,
-                #[diesel(sql_type = Nullable<Text>)]
-                video_url: Option<String>,
-                #[diesel(sql_type = Nullable<Text>)]
-                candidato_url: Option<String>,
-                #[diesel(sql_type = AmbitoEleccionType)]
-                ambito: AmbitoEleccion,
-                #[diesel(sql_type = Nullable<Text>)]
-                firstname: Option<String>,
-                #[diesel(sql_type = Nullable<Text>)]
-                paterno: Option<String>,
-                #[diesel(sql_type = Nullable<Text>)]
-                materno: Option<String>,
-                #[diesel(sql_type = Nullable<Jsonb>)]
-                raw_data: Option<serde_json::Value>,
-
-                // Additional joined fields
-                #[diesel(sql_type = Text)]
-                state_name: String,
-                #[diesel(sql_type = Text)]
-                position_name: String,
-                #[diesel(sql_type = Nullable<Text>)]
-                district_name: Option<String>,
-                #[diesel(sql_type = Text)]
-                poder_name: String,
-                #[diesel(sql_type = Nullable<Text>)]
-                matter_name: Option<String>,
-            }
-
+            // Shows the CandidateWithDetails structure and needed modules
+            candidate_details!();
             // Build the query with JOINs for all foreign keys
             diesel::sql_query(
                 "SELECT c.*,
@@ -245,7 +111,7 @@ pub async fn list_by_state(state_id: i32, cdb: ChacaDB) -> Template {
                 JOIN cat_poder po ON c.poder = po.uuid
                 LEFT JOIN cat_matter m ON c.matter = m.uuid
                 WHERE c.state = 8
-                ORDER BY c.fullname"
+                ORDER BY c.fullname")
             .bind::<Integer, _>(state_id)
             .load::<CandidateWithDetails>(connection)
             .expect("Error loading candidates with details")
@@ -269,12 +135,18 @@ pub async fn get_json(candidateid: Uuid, cdb: ChacaDB) -> Result<Json<Vec<Candid
                 .filter(crate::schema::candidate::id.eq(candidateid))
                 .load::<Candidate>(connection)
                 .expect("Error loading candidate")
-
+        })
+        .await;
+    if results.len() > 0 {
+        Ok(Json(results))
+    } else {
+        Err(NotFound(format!("Could not find candidate: {}", candidateid)))
+    }
 }
 
 /// Get a candidate and returns it as a JSON object
 #[get("/<candidateid>", format="text/html", rank=2)]
-pub async fn get_html(candidateid: Uuid, cdb: ChacaDB) -> Result<Json<Vec<Candidate>>, NotFound<String>> {
+pub async fn get_html(candidateid: Uuid, cdb: ChacaDB) -> Result<Template, NotFound<String>> {
     let results = cdb
         .run(move |connection| {
             crate::schema::candidate::dsl::candidate
@@ -284,7 +156,13 @@ pub async fn get_html(candidateid: Uuid, cdb: ChacaDB) -> Result<Json<Vec<Candid
         })
         .await;
     if results.len() > 0 {
-        Ok(Json(results))
+        Ok(
+
+    Template::render("candidate_profile", context! {
+        candidates: &results,
+        count: results.len()
+    })
+        )
     } else {
         Err(NotFound(format!("Could not find candidate: {}", candidateid)))
     }
