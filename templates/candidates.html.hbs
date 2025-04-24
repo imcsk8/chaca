@@ -53,7 +53,7 @@
                 <tbody>
                   {{#each candidates}}
                   <tr class="candidate-row" data-fullname="{{this.fullname}}" data-position="{{this.position_name}}" data-state="{{this.state_name}}">
-                    <td class="d-flex align-items-center">
+                    <td class="d-flex align-items-center" onClick="window.open('/candidates/{{this.id}}', '_blank')" style="cursor: pointer">
                       {{#if this.image_url}}
                       <div class="avatar-img" style="background-image: url({{this.image_url}});"></div>
                       {{else}}
