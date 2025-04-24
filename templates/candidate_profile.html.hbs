@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Listado de Candidatos</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/public/css/style.css">
+  </head>
+  <body>
+    <section class="ftco-section">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-md-8 text-center mb-4">
+            <h2 class="heading-section">Candidatos</h2>
+            <p>Total: {{count}} candidatos</p>
+          </div>
+        </div>
+        
+        <div class="row justify-content-center">
+          <div class="col-md-8 mb-4">
+            <div class="search-box">
+              <div class="input-group">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar candidatos...">
+                <div class="input-group-append">
+                  <button class="btn btn-primary" id="searchButton">
+                    <i class="fa fa-search"></i> Search
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-12">
+            <div class="table-wrap">
+              <table class="table table-responsive-xl" id="candidatesTable">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Cargo</th>
+                    <th>Estado</th>
+                    <th>Distrito</th>
+                    <th>Poder</th>
+                    <th>Contacto</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {{#each candidates}}
+                  <tr class="candidate-row" data-fullname="{{this.fullname}}" data-position="{{this.position_name}}" data-state="{{this.state_name}}">
+                    <td class="d-flex align-items-center" onClick="window.open('/candidates/{{this.id}}', '_blank')" style="cursor: pointer">
+                      {{#if this.image_url}}
+                      <div class="avatar-img" style="background-image: url({{this.image_url}});"></div>
+                      {{else}}
+                      <div class="avatar-img" style="background-image: url(/api/placeholder/50/50);"></div>
+                      {{/if}}
+                      <div class="pl-3">
+                        <span class="font-weight-bold">{{this.fullname}}</span>
+                        <br>
+                        <small>Edad: {{this.age}}&nbsp;</small>
+                        {{#if (eq this.sex "Hombre")}}
+                        <span class="badge badge-info">H</span>
+                        {{else}}
+                        <span class="badge badge-info">M</span>
+                        {{/if}}
+                      </div>
+                    </td>
+                    <td>{{this.position_name}}</td>
+                    <td>{{this.state_name}}</td>
+                    <td>{{#if this.district_name}}{{this.district_name}}{{else}}N/A{{/if}}</td>
+                    <td>{{this.poder_name}}</td>
+                    <td>
+                      {{#if this.email}}
+                      <a href="mailto:{{this.email}}"><i class="fa fa-envelope"></i> {{this.email}}</a><br>
+                      {{/if}}
+                      {{#if this.telephone}}
+                      <a href="tel:{{this.telephone}}"><i class="fa fa-phone"></i> {{this.telephone}}</a>
+                      {{/if}}
+                    </td>
+                    <td>
+                      <div class="btn-group" role="group">
+                        <a href="/candidates/{{this.id}}" class="btn btn-sm btn-primary">
+                          <i class="fa fa-eye"></i>
+                        </a>
+                        {{#if this.curriculum_url}}
+                        <a href="{{this.curriculum_url}}" target="_blank" class="btn btn-sm btn-info">
+                          <i class="fa fa-file-text-o"></i>
+                        </a>
+                        {{/if}}
+                        {{#if this.website}}
+                        <a href="{{this.website}}" target="_blank" class="btn btn-sm btn-success">
+                          <i class="fa fa-globe"></i>
+                        </a>
+                        {{/if}}
+                      </div>
+                    </td>
+                  </tr>
+                  {{/each}}
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Pagination -->
+            <nav aria-label="Candidates pagination">
+              <ul class="pagination" id="pagination">
+                <!-- Pagination will be populated by JavaScript -->
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+    
+    <script>
+      // Register Handlebars helper for equality check
+      Handlebars.registerHelper('eq', function(a, b) {
+        return a === b;
+      });
+      
+      $(document).ready(function() {
+        // Pagination configuration
+        const rowsPerPage = 50;
+        const rows = $('#candidatesTable tbody tr');
+        const rowsCount = rows.length;
+        const pagesCount = Math.ceil(rowsCount / rowsPerPage);
+        let currentPage = 1;
+        
+        // Function to display the appropriate rows for the current page
+        function displayRows() {
+          rows.hide();
+          const start = (currentPage - 1) * rowsPerPage;
+          const end = start + rowsPerPage;
+          
+          // Only show visible rows based on both pagination and search
+          const visibleRows = rows.filter(':not(.filtered)');
+          visibleRows.slice(start, end).show();
+          
+          // Update pagination UI
+          updatePagination();
+        }
+        
+        // Function to update pagination controls
+        function updatePagination() {
+          const visibleRows = rows.filter(':not(.filtered)').length;
+          const filteredPagesCount = Math.ceil(visibleRows / rowsPerPage);
+          
+          const pagination = $('#pagination');
+          pagination.empty();
+          
+          // Previous button
+          pagination.append(`
+            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+              <a class="page-link" href="#" data-page="${currentPage - 1}">Previous</a>
+            </li>
+          `);
+          
+          // Page numbers
+          for (let i = 1; i <= filteredPagesCount; i++) {
+            pagination.append(`
+              <li class="page-item ${currentPage === i ? 'active' : ''}">
+                <a class="page-link" href="#" data-page="${i}">${i}</a>
+              </li>
+            `);
+          }
+          
+          // Next button
+          pagination.append(`
+            <li class="page-item ${currentPage === filteredPagesCount ? 'disabled' : ''}">
+              <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
+            </li>
+          `);
+          
+          // Add click event for pagination links
+          $('.page-link').click(function(e) {
+            e.preventDefault();
+            const page = parseInt($(this).data('page'));
+            
+            // Only navigate if it's a valid page
+            if (page >= 1 && page <= filteredPagesCount && page !== currentPage) {
+              currentPage = page;
+              displayRows();
+            }
+          });
+        }
+        
+        // Search functionality
+        function performSearch() {
+          const searchTerm = $('#searchInput').val().toLowerCase();
+          
+          // If search term is empty, show all rows
+          if (searchTerm === '') {
+            rows.removeClass('filtered');
+          } else {
+            // Loop through all rows and check if they match the search
+            rows.each(function() {
+              const $row = $(this);
+              const fullname = $row.data('fullname').toLowerCase();
+              const position = $row.data('position').toLowerCase();
+              const state = $row.data('state').toLowerCase();
+              
+              // Check if any of the data contains the search term
+              if (fullname.includes(searchTerm) || 
+                  position.includes(searchTerm) || 
+                  state.includes(searchTerm)) {
+                $row.removeClass('filtered');
+              } else {
+                $row.addClass('filtered');
+              }
+            });
+          }
+          
+          // Reset to first page and display appropriate rows
+          currentPage = 1;
+          displayRows();
+        }
+        
+        // Initial setup
+        displayRows();
+        
+        // Search button click handler
+        $('#searchButton').click(function() {
+          performSearch();
+        });
+        
+        // Search input keyup handler (search as you type)
+        $('#searchInput').on('keyup', function(e) {
+          // Search on Enter key
+          //if (e.keyCode === 13) {
+            performSearch();
+          //}
+        });
+      });
+    </script>
+  </body>
+</html>
