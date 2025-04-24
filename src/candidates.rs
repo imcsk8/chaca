@@ -110,7 +110,7 @@ pub async fn list_by_state(state_id: i32, cdb: ChacaDB) -> Template {
                 LEFT JOIN cat_district d ON c.district = d.id
                 JOIN cat_poder po ON c.poder = po.uuid
                 LEFT JOIN cat_matter m ON c.matter = m.uuid
-                WHERE c.state = 8
+                WHERE c.state = $1
                 ORDER BY c.fullname")
             .bind::<Integer, _>(state_id)
             .load::<CandidateWithDetails>(connection)
@@ -145,26 +145,57 @@ pub async fn get_json(candidateid: Uuid, cdb: ChacaDB) -> Result<Json<Vec<Candid
 }
 
 /// Get a candidate and returns it as a JSON object
-#[get("/<candidateid>", format="text/html", rank=2)]
-pub async fn get_html(candidateid: Uuid, cdb: ChacaDB) -> Result<Template, NotFound<String>> {
-    let results = cdb
+#[get("/<candidate_id>", format="text/html", rank=2)]
+pub async fn get_html(candidate_id: Uuid, cdb: ChacaDB) -> Result<Template, NotFound<String>> {
+    /*let results = cdb
         .run(move |connection| {
             crate::schema::candidate::dsl::candidate
                 .filter(crate::schema::candidate::id.eq(candidateid))
                 .load::<Candidate>(connection)
                 .expect("Error loading candidate")
         })
+        .await;*/
+
+
+    // Shows the CandidateWithDetails structure and needed modules
+    candidate_details!();
+    let results = cdb
+        .run(move |connection| {
+            // Shows the CandidateWithDetails structure and needed modules
+            candidate_details!();
+            // Build the query with JOINs for all foreign keys
+            diesel::sql_query(
+                "SELECT c.*,
+                    s.name as state_name,
+                    p.cargo as position_name,
+                    d.name as district_name,
+                    po.name as poder_name,
+                    m.name as matter_name
+                FROM candidate c
+                JOIN cat_state s ON c.state = s.id_inegi
+                JOIN cat_positions p ON c.position = p.id
+                LEFT JOIN cat_district d ON c.district = d.id
+                JOIN cat_poder po ON c.poder = po.uuid
+                LEFT JOIN cat_matter m ON c.matter = m.uuid
+                WHERE c.id = $1
+                ORDER BY c.fullname")
+            .bind::<Uuid, _>(candidate_id)
+            .load::<CandidateWithDetails>(connection)
+            .expect("Error loading candidates with details")
+        })
         .await;
+
+
+
     if results.len() > 0 {
         Ok(
-
-    Template::render("candidate_profile", context! {
-        candidates: &results,
-        count: results.len()
-    })
+            Template::render("candidate_profile", context! {
+                candidate: &results[0],
+                count: results.len()
+            })
         )
     } else {
-        Err(NotFound(format!("Could not find candidate: {}", candidateid)))
+        Err(NotFound(format!("Could not find candidate: {}", candidate_id)))
     }
 }
 
