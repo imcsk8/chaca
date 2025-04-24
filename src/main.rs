@@ -25,7 +25,7 @@ fn rocket() -> _ {
         .mount(
             "/candidates",
             routes![candidates::add, candidates::delete, candidates::get_json,
-                candidates::get_html, candidates::list],
+                candidates::get_html, candidates::list_all, candidates::list_by_state],
         )
         .mount("/public", FileServer::from(STATIC_FILES_DIR))
         .attach(Template::fairing())
