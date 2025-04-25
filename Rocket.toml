@@ -2,6 +2,12 @@
 [global]
 address = "0.0.0.0"
 [global.databases.postgres]
-url = "postgres://postgres:prueba123@127.0.0.1:9432/postgres"
+url = "postgres://example:example@127.0.0.1:9432/poder_judicial"
 timeout = 5
 pool_size = 2
+
+[default.oauth.facebook]
+provider = "Facebook"
+client_id = "<client_id>"
+client_secret = "<client_secret>"
+redirect_uri = "http://localhost:8000/auth/facebook"
