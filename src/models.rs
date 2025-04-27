@@ -18,7 +18,7 @@ use uuid::Uuid;
 use chrono::DateTime;
 use chrono::offset::Utc;
 use diesel::prelude::*;
-#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize)]
+#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize, AsChangeset)]
 #[diesel(table_name = candidate)]
 pub struct Candidate {
     pub id: Uuid,
@@ -48,7 +48,7 @@ pub struct Candidate {
     pub raw_data: Option<serde_json::Value>,
 }
 
-#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize)]
+#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize, AsChangeset)]
 #[diesel(table_name = candidate_extras)]
 pub struct CandidateExtra {
     pub id: i32,
@@ -57,7 +57,7 @@ pub struct CandidateExtra {
     pub answer: String,
 }
 
-#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize)]
+#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize, AsChangeset)]
 #[diesel(table_name = candidate_social_media)]
 pub struct CandidateSocialMedia {
     pub id: i32,
@@ -65,7 +65,7 @@ pub struct CandidateSocialMedia {
     pub url: String,
 }
 
-#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize)]
+#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize, AsChangeset)]
 #[diesel(table_name = cat_district)]
 pub struct CatDistrict {
     pub id: i32,
@@ -73,7 +73,7 @@ pub struct CatDistrict {
     pub id_inegi: i32,
 }
 
-#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize)]
+#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize, AsChangeset)]
 #[diesel(primary_key(uuid))]
 #[diesel(table_name = cat_matter)]
 pub struct CatMatter {
@@ -81,7 +81,7 @@ pub struct CatMatter {
     pub name: String,
 }
 
-#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize)]
+#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize, AsChangeset)]
 #[diesel(primary_key(uuid))]
 #[diesel(table_name = cat_poder)]
 pub struct CatPoder {
@@ -90,7 +90,7 @@ pub struct CatPoder {
     pub name: Option<String>,
 }
 
-#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize)]
+#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize, AsChangeset)]
 #[diesel(table_name = cat_positions)]
 pub struct CatPosition {
     pub id: i32,
@@ -100,7 +100,7 @@ pub struct CatPosition {
     pub long_name: String,
 }
 
-#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize)]
+#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize, AsChangeset)]
 #[diesel(primary_key(id_inegi))]
 #[diesel(table_name = cat_state)]
 pub struct CatState {
@@ -108,7 +108,7 @@ pub struct CatState {
     pub name: Option<String>,
 }
 
-#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize)]
+#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize, AsChangeset)]
 #[diesel(primary_key(reaction_id))]
 #[diesel(table_name = comment_reactions)]
 pub struct CommentReaction {
@@ -119,7 +119,7 @@ pub struct CommentReaction {
     pub created_at: Option<DateTime<Utc>>,
 }
 
-#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize)]
+#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize, AsChangeset)]
 #[diesel(primary_key(comment_id))]
 #[diesel(table_name = comments)]
 pub struct Comment {
@@ -136,7 +136,7 @@ pub struct Comment {
     pub likes_count: Option<i32>,
 }
 
-#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize)]
+#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize, AsChangeset)]
 #[diesel(table_name = users)]
 pub struct User {
     pub id: Uuid,
