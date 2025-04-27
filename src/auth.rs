@@ -1,4 +1,10 @@
 use crate::claims::*;
+use crate::users::get;
+use crate::db::ChacaDB;
+use crate::models::User;
+use diesel::sql_query;
+use diesel::sql_types::Text;
+
 /// Authentication functionalities
 use rocket::{get, post, routes, uri, Request, response::Redirect, State, http::Status};
 use rocket::response::status::Custom;
@@ -9,6 +15,11 @@ use serde::{Deserialize, Serialize};
 use rocket_oauth2::{OAuth2, TokenResponse};
 use std::sync::Arc;
 use reqwest::{Client, Response};
+use uuid::Uuid;
+use chrono::{DateTime, Local, NaiveDateTime, Utc};
+
+// For Facebook authentication
+pub static FACEBOOK_URL: &str = "https://graph.facebook.com/v22.0/me?fields=";
 
 /// Login request object
 #[derive(Deserialize)]
@@ -67,7 +78,8 @@ pub fn facebook_login(oauth2: OAuth2<Facebook>, cookies: &CookieJar<'_>) -> Redi
 pub async fn facebook_callback(
     token: TokenResponse<Facebook>,
     cookies: &CookieJar<'_>,
-    state: &State<AppState>
+    state: &State<AppState>,
+    cdb: ChacaDB,
 ) -> Result<Redirect, status::Custom<String>> {
     // Exchange OAuth token for user data
     let user_data = match get_facebook_user_data(&token.access_token(), &state.http_client).await {
@@ -80,6 +92,40 @@ pub async fn facebook_callback(
     let jwt_token = claim.into_facebook_token(&user_data, &state.jwt_secret)?;
     // Set the token in a cookie for future checks
     cookies.add(Cookie::new("auth_token", jwt_token.clone()));
+
+
+    let now: NaiveDateTime = Local::now().naive_local();
+    // Check if the user exists in the database
+    match User::load_by_oauth(user_data.id.clone(), &cdb).await {
+        // Update if exists
+        Ok(mut u)  => {
+            u.access_token = jwt_token;
+            u.updated_at = now;
+            u.last_login = Some(Utc::now());
+            u.update(&cdb);
+        },
+        // Insert if it does not exist
+        Err(_) => {
+            let u = User {
+                id: Uuid::new_v4(),
+                name: Some(user_data.name),
+                profile_picture_url: Some(user_data.picture),
+                email: user_data.email.unwrap_or_default(),
+                password: None,
+                oauth_provider: "facebook".to_string(),
+                oauth_user_id: user_data.id.clone(),
+                access_token: jwt_token,
+                refresh_token: None,
+                created_at: now,
+                updated_at: now,
+                last_login: Some(Utc::now()),
+            };
+            u.insert(cdb);
+        },
+
+    }
+
+
     match cookies.get("login_uri") {
         Some(uri_cookie) => {
             let cookie_name = String::from(uri_cookie.name());
@@ -94,8 +140,7 @@ pub async fn facebook_callback(
 
 /// Get user info from Facebook
 async fn get_facebook_user_data(access_token: &str, client: &Client) -> Result<FacebookUserInfo, reqwest::Error> {
-    // Facebook Graph API endpoint for user data - without access token in the URL
-    let url = "https://graph.facebook.com/v22.0/me?fields=id,name,email";
+    let url = format!("{}{}", FACEBOOK_URL, FACEBOOK_FIELDS);
 
     // Send access token in the Authorization header instead
     client.get(url)
@@ -105,3 +150,19 @@ async fn get_facebook_user_data(access_token: &str, client: &Client) -> Result<F
         .json::<FacebookUserInfo>()
         .await
 }
+
+
+
+/*
+    let results = tdb.run(move |connection|
+        crate::schema::users::dsl::users
+            .filter(id.eq(userid))
+            .load::<User>(connection)
+        .expect("Error loading users")
+    ).await;
+    if results.len() > 0 {
+        Ok(Json(results))
+    } else {
+        Err(NotFound(format!("Could not find user: {}", userid)))
+    }
+*/
