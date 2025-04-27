@@ -12,10 +12,12 @@ use crate::db::*;
 use crate::claims::Claims;
 use crate::models::User;
 use crate::schema::users::dsl::*;
+use diesel::result::Error;
+//use std::error::Error;
 
 type Result<T, E = Debug<diesel::result::Error>> = std::result::Result<T, E>;
 
-/// Creates a venue
+/// Creates a user
 #[post("/add", format = "json", data = "<arg_user>")]
 pub async fn add(arg_user: Json<User>, _user: Claims, tdb: ChacaDB) ->
 Result<Created<Json<User>>, BadRequest<String>> {
@@ -24,7 +26,7 @@ Result<Created<Json<User>>, BadRequest<String>> {
 		.run(move |conn| { 
 			sql_query("INSERT INTO users VALUES(gen_random_uuid(), $1, $2,
 				get_pw_hash($3), $4, $5,
-				$6, $7, now(), now()) RETURNING *;")
+				$6, $7, now(), now(), now()) RETURNING *;")
 				.bind::<Text, _>(user.name.expect("Error deserializing user name")) // TODO: send error if None
 				.bind::<Text, _>(user.email)
 				.bind::<Text, _>(user.password.expect("Error deserializing password"))
@@ -45,7 +47,7 @@ Result<Created<Json<User>>, BadRequest<String>> {
 
 //https://api.rocket.rs/v0.5/rocket_sync_db_pools/
 
-/// Show the list of venues in HTML
+/// Show the list of users in HTML
 #[get("/")]
 pub async fn list(tdb: ChacaDB) -> Template {
     let results =
@@ -57,7 +59,7 @@ pub async fn list(tdb: ChacaDB) -> Template {
     Template::render("users", context! {users: &results, count: results.len()})
 }
 
-/// Get a venue and returns it as a JSON object
+/// Get a user and returns it as a JSON object
 #[get("/<userid>")]
 pub async fn get(userid: Uuid, tdb: ChacaDB) ->
 Result<Json<Vec<User>>, NotFound<String>> {
@@ -74,14 +76,33 @@ Result<Json<Vec<User>>, NotFound<String>> {
     }
 }
 
-/// Remove a venue
+/// Get a user and returns it as a JSON object
+#[get("/oauth2/<oauth_id>")]
+pub async fn get_by_oauth(oauth_id: String, tdb: ChacaDB) ->
+Result<Json<Vec<User>>, NotFound<String>> {
+    //TODO: check borrows
+    let my_id = oauth_id.clone();
+    let results = tdb.run(move |connection|
+        crate::schema::users::dsl::users
+            .filter(oauth_user_id.eq(oauth_id.clone()))
+            .load::<User>(connection)
+        .expect("Error loading user")
+    ).await;
+    if results.len() > 0 {
+        Ok(Json(results))
+    } else {
+        Err(NotFound(format!("Could not find user: {}", my_id)))
+    }
+}
+
+/// Remove a user
 #[delete("/<userid>")]
 pub async fn delete(userid: Uuid, _user: Claims, tdb: ChacaDB) ->
 Result<Json<String>, NotFound<String>> {
     let results = tdb.run(move |connection|
         diesel::delete(
             crate::schema::users::dsl::users
-                .filter(id.eq(userid)))
+            .filter(id.eq(userid)))
             .execute(connection)
     ).await;
     if results.unwrap() == 1 {
@@ -91,3 +112,55 @@ Result<Json<String>, NotFound<String>> {
     }
 }
 
+
+/*******************************************************************************
+*                                                                              *
+*                                                                              *
+*                      G E N E R A L  F U N C T I O N S                        *
+*                                                                              *
+*                                                                              *
+********************************************************************************/
+
+impl User {
+    /// Creates a user
+    pub async fn insert(
+        self,
+        cdb: ChacaDB
+    ) -> Result<usize, Error> {
+        cdb.run(move |conn| {
+                diesel::insert_into(users).values(&self).execute(conn)
+        }).await
+    }
+
+    /// Updates a user
+    pub async fn update(
+        self,
+        cdb: &ChacaDB
+    ) -> Result<usize, Error> {
+        cdb.run(move |conn| {
+            diesel::update(users)
+            .set(self)
+            .execute(conn)
+        }).await
+    }
+
+    pub async fn load_by_oauth(
+        oauth_id: String,
+        cdb: &ChacaDB
+    ) -> Result<Self, NotFound<String>> {
+        //TODO: check borrows
+        let my_id = oauth_id.clone();
+        let results = cdb.run(move |connection|
+            crate::schema::users::dsl::users
+                .filter(oauth_user_id.eq(oauth_id.clone()))
+                .load::<User>(connection)
+            .expect("Error loading user")
+        ).await;
+        if results.len() > 0 {
+            Ok(results[0].clone())
+        } else {
+            Err(NotFound(format!("Could not find user: {}", my_id)))
+        }
+    }
+
+}
