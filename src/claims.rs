@@ -16,11 +16,17 @@ use crate::db::*;
 const BEARER: &str = "Bearer";
 const AUTHORIZATION: &str = "Authorization";
 
+// Define configuration structs
+#[derive(Debug, Deserialize, Serialize)]
+pub struct JwtConfig {
+    pub secret: String,
+    pub duration: i64,
+}
 
 lazy_static! {
+    // Extract JWT configuration from the "jwt" table in Rocket.toml
     /// Time for token expiration
-    //TODO: check if we can register this on rocket build
-    static ref TOKEN_DURATION: Duration = Duration::minutes(5);
+    static ref TOKEN_DURATION: Duration = Duration::minutes(get_token_duration());
 }
 
 /// Manage authentication decoding errors
@@ -70,7 +76,9 @@ impl<'r> FromRequest<'r> for Claims {
         // Check if we have a cookie
         match request.cookies().get("auth_token") {
             Some(t) =>  match Claims::from_cookie(t, &state.jwt_secret) {
-                Ok(c) => return Outcome::Success(c),
+                Ok(c) => {
+                    return Outcome::Success(c);
+            },
                 Err(e) => return Outcome::Error((Status::Forbidden, e)),
             },
             None => {} // Let the next match check for the token
@@ -194,3 +202,26 @@ impl Claims {
     }
 
 }
+
+
+/*******************************************************************************
+*                                                                              *
+*                                                                              *
+*                     P R I V A T E  F U N C T I O N S                         *
+*                                                                              *
+*                                                                              *
+********************************************************************************/
+
+
+/// Get the duration of the token from the configuration file
+fn get_token_duration() -> i64 {
+    let figment = rocket::Config::figment();
+
+    // Extract JWT configuration from the "jwt" table in Rocket.toml
+    let jwt_config: JwtConfig = figment
+        .extract_inner("jwt")
+        .expect("JWT configuration missing in Rocket.toml");
+    jwt_config.duration
+}
+
+
