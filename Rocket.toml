@@ -6,8 +6,12 @@ url = "postgres://example:example@127.0.0.1:9432/poder_judicial"
 timeout = 5
 pool_size = 2
 
-[default.oauth.facebook]
+[default.oauth.facebook]                                                                                                                                               
 provider = "Facebook"
 client_id = "<client_id>"
 client_secret = "<client_secret>"
-redirect_uri = "http://localhost:8000/auth/facebook"
+redirect_uri = "http://127.0.0.1:8000/auth/facebook"
+ 
+[default.jwt]
+# Generate with: openssl rand -base64 32
+secret = "change_me_if_you_dont_want_to_be_hacked"
