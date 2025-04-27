@@ -9,10 +9,11 @@ target/
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb
 
+# Configuration file
+Rocket.toml*
+
 data
 www
 .env
 \.*sw?
 
-# Configuration file
-Rocket.toml
