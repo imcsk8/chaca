@@ -7,7 +7,7 @@ use rocket_dyn_templates::Template;
 use rocket::http::Cookie;
 use rocket_oauth2::OAuth2;
 use crate::auth::rocket_uri_macro_facebook_login;
-use crate::claims::{AppState, Facebook};
+use crate::claims::{AppState, Facebook, JwtConfig};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
@@ -23,11 +23,6 @@ pub mod types;
 
 pub static STATIC_FILES_DIR: &str = "www/static";
 
-// Define configuration structs
-#[derive(Debug, Deserialize, Serialize)]
-pub struct JwtConfig {
-    secret: String,
-}
 
 #[launch]
 fn rocket() -> _ {
