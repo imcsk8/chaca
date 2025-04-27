@@ -52,11 +52,18 @@ pub struct Claims {
 pub struct Facebook;
 
 // Create structs for user data and JWT claims
+/// Fields to ask the Facebook graph API
+pub static FACEBOOK_FIELDS: &str = "id,email,name,short_name,picture,location";
+
+/// Derived from the info asked from the facebook graph API
 #[derive(Debug, Deserialize, Serialize)]
 pub struct FacebookUserInfo {
     pub id: String,
-    pub name: String,
     pub email: Option<String>,
+    pub name: String,
+    pub short_name: String,
+    pub picture: String,
+    pub location: String,
 }
 
 // Create a struct to hold application state
