@@ -19,6 +19,8 @@ serde_json = "1.0.140"
 
 ## custom macros
 chaca_macros = { path = "chaca_macros/" }
+rocket_oauth2 = "0.5.0"
+reqwest = { version = "0.12.15", features = ["json", "multipart"] }
 
 [dependencies.rocket_dyn_templates]
 version = "0.2.0"
