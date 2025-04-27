@@ -5,14 +5,14 @@ use crate::models::Candidate;
 //use crate::schema::candidate::dsl::*;
 use crate::schema::candidate;
 use diesel::prelude::*;
-use rocket::response::status::NotFound;
-use rocket::response::{status::Created, Debug};
+use rocket::response::{Debug, Redirect, status::Created, status::NotFound};
 use rocket::serde::json::Json;
 use rocket::serde::uuid::Uuid;
-use rocket::{delete, get, post};
+use rocket::{delete, get, post, uri};
 use rocket_dyn_templates::{context, Template};
 use rocket_sync_db_pools::diesel;
 use serde_json::json;
+use rocket::serde::{Deserialize, Serialize};
 
 type Result<T, E = Debug<diesel::result::Error>> = std::result::Result<T, E>;
 
@@ -185,8 +185,6 @@ pub async fn get_html(candidate_id: Uuid, cdb: ChacaDB) -> Result<Template, NotF
         })
         .await;
 
-
-
     if results.len() > 0 {
         Ok(
             Template::render("candidate_profile", context! {
@@ -217,4 +215,21 @@ pub async fn delete(
     } else {
         Err(NotFound(format!("Could not find candidate: {}", candidateid)))
     }
+}
+
+// TODO: This is for testing, make this a proper endpoint
+#[derive(Debug, Serialize, Deserialize)]
+struct User {
+    id: String,
+    name: String,
+    email: Option<String>,
+}
+
+#[get("/me")]
+pub async fn get_current_user(claim: Claims) -> Json<User> {
+    Json(User {
+        id: claim.id,
+        name: claim.name,
+        email: claim.email,
+    })
 }
