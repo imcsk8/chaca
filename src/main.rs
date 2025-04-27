@@ -20,6 +20,7 @@ pub mod claims;
 pub mod models;
 pub mod schema;
 pub mod types;
+pub mod users;
 
 pub static STATIC_FILES_DIR: &str = "www/static";
 
