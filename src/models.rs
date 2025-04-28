@@ -58,6 +58,17 @@ pub struct CandidateExtra {
 }
 
 #[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize, AsChangeset)]
+#[diesel(primary_key(reaction_id))]
+#[diesel(table_name = candidate_reactions)]
+pub struct CandidateReaction {
+    pub reaction_id: i32,
+    pub candidate_id: Uuid,
+    pub user_id: Uuid,
+    pub reaction_type: Reaction,
+    pub created_at: Option<DateTime<Utc>>,
+}
+
+#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize, AsChangeset)]
 #[diesel(table_name = candidate_social_media)]
 pub struct CandidateSocialMedia {
     pub id: i32,
