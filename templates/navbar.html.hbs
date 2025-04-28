@@ -1,0 +1,97 @@
+<div id="facebook_info" class="facebook">
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '691334669932105',
+      xfbml      : true,
+      version    : 'v22.0'
+    });
+    FB.AppEvents.logPageView();
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "https://connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+
+
+/*
+Activar para ver el status
+FB.getLoginStatus(function(response) {
+    statusChangeCallback(response);
+});
+
+Esto trae response
+{
+    status: 'connected',
+    authResponse: {
+        accessToken: '...',
+        expiresIn:'...',
+        signedRequest:'...',
+        userID:'...'
+    }
+}
+
+ En status se especifica el estado de inicio de sesión de la persona que usa la aplicación. El estado puede ser uno de los siguientes:
+
+    connected: la persona inició sesión en Facebook y en tu aplicación.
+    not_authorized: la persona inició sesión en Facebook, pero no en tu aplicación.
+    unknown: la persona no inició sesión en Facebook y no sabes si lo hizo en tu aplicación o si se llamó antes al método FB.logout(), por lo que no puede conectarse a Facebook.
+
+authResponse: se incluye si el estado es connected, y consta de los siguientes elementos:
+
+    accessToken: contiene un token de acceso para la persona que usa la aplicación.
+    expiresIn: indica la hora UNIX en que el token caduca y se debe renovar.
+    signedRequest: un parámetro firmado que contiene información sobre la persona que usa la aplicación.
+    userID: es el identificador de la persona que usa la aplicación.
+
+Una vez que la aplicación conoce el estado de inicio de sesión de la persona que la usa, puedes realizar una de estas acciones:
+
+    Si la persona inició sesión en Facebook y en la aplicación, redirígela a la experiencia de sesión iniciada de la aplicación.
+    Si la persona no inició sesión en la aplicación o en Facebook, abre el cuadro de diálogo de inicio de sesión con FB.login() o muéstrale el botón "Iniciar sesión".
+
+*/
+
+function checkLoginState() {
+  FB.getLoginStatus(function(response) {
+    statusChangeCallback(response);
+  });
+}
+
+</script>
+
+</div>
+
+
+    <nav class="navbar navbar-expand-lg">
+      <div class="container">
+        <a class="navbar-brand" href="/">Elecciones Judiciales</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon" style="color:white;"><i class="fa fa-bars"></i></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <!-- <a class="nav-link" href="/login"> -->
+<fb:login-button 
+  scope="public_profile,email"
+  onlogin="checkLoginState();">
+</fb:login-button>
+
+
+
+<!-- <i class="fa fa-sign-in"></i> Login</a> -->
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/logout"><i class="fa fa-sign-out"></i> Logout</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/generate-vote-list"><i class="fa fa-list"></i> Generar listado de voto</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
