@@ -4,7 +4,7 @@ use rocket::response::Debug;
 use rocket::{catch, catchers, launch, routes, uri, Request};
 use rocket::response::Redirect;
 use rocket_dyn_templates::Template;
-use rocket::http::Cookie;
+use rocket::http::{Cookie, SameSite};
 use rocket_oauth2::OAuth2;
 use crate::auth::rocket_uri_macro_facebook_login;
 use crate::claims::{AppState, Facebook, JwtConfig};
@@ -24,7 +24,6 @@ pub mod users;
 
 pub static STATIC_FILES_DIR: &str = "www/static";
 
-
 #[launch]
 fn rocket() -> _ {
    // Load Rocket's configuration (this will look for Rocket.toml)
@@ -41,13 +40,21 @@ fn rocket() -> _ {
     };
 
     rocket::build()
-    .mount("/", routes![auth::login, auth::facebook_login,
+    //.mount("/", routes![auth::login, auth::facebook_login,
+    .mount("/", routes![auth::logout, auth::facebook_login,
                             auth::facebook_callback])
         .mount(
             "/candidates",
-            routes![candidates::add, candidates::delete, candidates::get_json,
-                candidates::get_html, candidates::list_all, candidates::list_by_state,
-                candidates::get_current_user],
+            routes![
+                candidates::add, candidates::delete,
+                candidates::get_json,
+                candidates::get_html, candidates::list_all,
+                candidates::list_by_state,
+            ]
+        )
+        .mount(
+            "/users",
+            routes![users::me],
         )
         .mount("/public", FileServer::from(STATIC_FILES_DIR))
         .manage(app_state)
@@ -61,12 +68,16 @@ fn rocket() -> _ {
 // Catcher that handles auth failures and redirects
 #[catch(403)]
 fn unauthorized_catcher(req: &Request) -> Redirect {
-    // Try to get the cached redirect
+    //TODO: Try to get the cached redirect
     //req.local_cache(|| Redirect::to(uri!(facebook_login)))
     // TODO: check the use of cache
     let uri = req.uri().to_string();
     let cookies = req.cookies();
-    cookies.add(Cookie::new("login_uri", uri.clone()));
-    println!("REQUEST: \n{:#?}\n", req);
+    let cookie = Cookie::build(("login_uri", uri.clone()))
+        .path("/")
+        .secure(false)
+        .same_site(SameSite::Lax)
+        .http_only(true);
+    cookies.add(cookie);
     Redirect::to(uri!(facebook_login))
 }
