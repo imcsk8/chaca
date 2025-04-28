@@ -61,6 +61,20 @@ diesel::table! {
 }
 
 diesel::table! {
+    use diesel::sql_types::*;
+    use super::sql_types::Reaction;
+    use crate::types::ReactionType;
+
+    candidate_reactions (reaction_id) {
+        reaction_id -> Int4,
+        candidate_id -> Uuid,
+        user_id -> Uuid,
+        reaction_type -> ReactionType,
+        created_at -> Nullable<Timestamptz>,
+    }
+}
+
+diesel::table! {
     candidate_social_media (id) {
         id -> Int4,
         candidate_id -> Nullable<Uuid>,
@@ -164,6 +178,8 @@ diesel::joinable!(candidate -> cat_poder (poder));
 diesel::joinable!(candidate -> cat_positions (position));
 diesel::joinable!(candidate -> cat_state (state));
 diesel::joinable!(candidate_extras -> candidate (candidate_id));
+diesel::joinable!(candidate_reactions -> candidate (candidate_id));
+diesel::joinable!(candidate_reactions -> users (user_id));
 diesel::joinable!(candidate_social_media -> candidate (candidate_id));
 diesel::joinable!(cat_district -> cat_state (id_inegi));
 diesel::joinable!(comment_reactions -> comments (comment_id));
@@ -173,6 +189,7 @@ diesel::joinable!(comments -> users (user_id));
 diesel::allow_tables_to_appear_in_same_query!(
     candidate,
     candidate_extras,
+    candidate_reactions,
     candidate_social_media,
     cat_district,
     cat_matter,
