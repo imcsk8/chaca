@@ -26,5 +26,8 @@ bootstrap: db
 run: dirs db
 	cargo run
 
+debug: dirs db
+	ROCKET_LOG_LEVEL=debug cargo run
+
 clean:
 	cargo clean
