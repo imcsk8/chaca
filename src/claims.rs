@@ -12,6 +12,7 @@ use rocket::{
 use serde::{Deserialize, Serialize};
 use reqwest::Client;
 use crate::db::*;
+use rocket::serde::json::{Json, Value};
 
 const BEARER: &str = "Bearer";
 const AUTHORIZATION: &str = "Authorization";
@@ -53,7 +54,8 @@ pub struct Facebook;
 
 // Create structs for user data and JWT claims
 /// Fields to ask the Facebook graph API
-pub static FACEBOOK_FIELDS: &str = "id,email,name,short_name,picture,location";
+//pub static FACEBOOK_FIELDS: &str = "id,email,name,short_name,picture,location";
+pub static FACEBOOK_FIELDS: &str = "id,email,name,short_name,picture";
 
 /// Derived from the info asked from the facebook graph API
 #[derive(Debug, Deserialize, Serialize)]
@@ -62,8 +64,8 @@ pub struct FacebookUserInfo {
     pub email: Option<String>,
     pub name: String,
     pub short_name: String,
-    pub picture: String,
-    pub location: String,
+    pub picture: serde_json::Value,
+    //pub location: String,
 }
 
 // Create a struct to hold application state
@@ -152,16 +154,16 @@ impl Claims {
             _ => AuthenticationError::Decoding(e.to_string()),
         })?;
 
-        Ok(token.claims)
-    }
+    Ok(token.claims)
+}
 
 
 
-    /// Convert this Claims instance to a token string to be sent to the browser
-    pub fn into_token(mut self, secret: &String) -> Result<String, Custom<String>> {
-        // the expiration of the token is: now + TOKEN_DURATION
-        let now = Utc::now();
-        // We store the time the token was issued
+/// Convert this Claims instance to a token string to be sent to the browser
+pub fn into_token(mut self, secret: &String) -> Result<String, Custom<String>> {
+    // the expiration of the token is: now + TOKEN_DURATION
+    let now = Utc::now();
+    // We store the time the token was issued
         self.iat = now.timestamp() as usize;
         let expiration = now
             .checked_add_signed(*TOKEN_DURATION)
