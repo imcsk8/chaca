@@ -217,19 +217,4 @@ pub async fn delete(
     }
 }
 
-// TODO: This is for testing, make this a proper endpoint
-#[derive(Debug, Serialize, Deserialize)]
-struct User {
-    id: String,
-    name: String,
-    email: Option<String>,
-}
 
-#[get("/me")]
-pub async fn get_current_user(claim: Claims) -> Json<User> {
-    Json(User {
-        id: claim.id,
-        name: claim.name,
-        email: claim.email,
-    })
-}
