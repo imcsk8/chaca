@@ -4,6 +4,7 @@ use diesel::sql_types::Text;
 use rocket::response::{status::Created, Debug};
 use rocket::serde::json::Json;
 use rocket::serde::uuid::Uuid;
+use rocket::serde::{Deserialize, Serialize};
 use rocket::{get, post, delete};
 use rocket_dyn_templates::{context, Template};
 use rocket_sync_db_pools::diesel;
@@ -110,6 +111,23 @@ Result<Json<String>, NotFound<String>> {
     } else {
         Err(NotFound(format!("Could not find user: {}", userid)))
     }
+}
+
+// TODO: This is for testing, make this a proper endpoint
+#[derive(Debug, Serialize, Deserialize)]
+struct MyUser {
+    id: String,
+    name: String,
+    email: Option<String>,
+}
+
+#[get("/me")]
+pub async fn me(claim: Claims) -> Json<MyUser> {
+    Json(MyUser {
+        id: claim.id,
+        name: claim.name,
+        email: claim.email,
+    })
 }
 
 
