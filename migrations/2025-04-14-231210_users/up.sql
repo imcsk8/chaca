@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS Users (
     UNIQUE (oauth_provider, id)
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_oauth_user_id on users(oauth_user_id);
 
 
 -- *****************************************************************************
