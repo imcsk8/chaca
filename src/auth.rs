@@ -10,13 +10,14 @@ use rocket::{get, post, routes, uri, Request, response::Redirect, State, http::S
 use rocket::response::status::Custom;
 use rocket::response::status;
 use rocket::serde::json::Json;
-use rocket::http::{Header, Cookie, CookieJar};
+use rocket::http::{Cookie, CookieJar, Header, SameSite};
 use serde::{Deserialize, Serialize};
 use rocket_oauth2::{OAuth2, TokenResponse};
 use std::sync::Arc;
 use reqwest::{Client, Response};
 use uuid::Uuid;
 use chrono::{DateTime, Local, NaiveDateTime, Utc};
+use log::{info};
 
 // For Facebook authentication
 pub static FACEBOOK_URL: &str = "https://graph.facebook.com/v22.0/me?fields=";
@@ -42,6 +43,7 @@ pub struct LoginResponse {
 *                                                                              *
 ********************************************************************************/
 
+/*
 /// User authentication, Successful authentication returns a JWT
 #[post("/login", data = "<req>")]
 pub fn login(req: Json<LoginRequest>, state: &State<AppState>) -> Result<Json<LoginResponse>, Custom<String>> {
@@ -57,6 +59,26 @@ pub fn login(req: Json<LoginRequest>, state: &State<AppState>) -> Result<Json<Lo
 
     Ok(Json(response))
 }
+*/
+
+/// Logout
+#[get("/logout")]
+pub fn logout(
+	//claim: Claims,
+	state: &State<AppState>,
+	cookies: &CookieJar<'_>
+) -> Redirect {
+	info!("Info level: {:#?}", cookies);
+    match cookies.get("login_uri") {
+        Some(uri_cookie) => {
+			let cookie_name = String::from(uri_cookie.name());
+			cookies.remove(Cookie::named(cookie_name));
+			cookies.remove(Cookie::named("auth_token"));
+        },
+        None =>  {}
+    }
+    Redirect::to("/")
+}
 
 /*******************************************************************************
 *                                                                              *
@@ -70,8 +92,7 @@ pub fn login(req: Json<LoginRequest>, state: &State<AppState>) -> Result<Json<Lo
 #[get("/login/facebook")]
 pub fn facebook_login(oauth2: OAuth2<Facebook>, cookies: &CookieJar<'_>) -> Redirect {
     // Redirect to Facebook for authentication
-    println!("COOKIES: {:#?}\n", cookies);
-    oauth2.get_redirect(cookies, &["public_profile", "email"]).unwrap()
+    oauth2.get_redirect(cookies, &["public_profile", "email"]).unwrap() //TODO: fix unwrap
 }
 
 #[get("/auth/facebook")]
@@ -88,11 +109,17 @@ pub async fn facebook_callback(
     };
 
     let claim = Claims::from_name(&user_data.id);
-    println!("USER DATA: \n{:#?}\n", &user_data);
     let jwt_token = claim.into_facebook_token(&user_data, &state.jwt_secret)?;
-    // Set the token in a cookie for future checks
-    cookies.add(Cookie::new("auth_token", jwt_token.clone()));
 
+    // Set the token in a cookie for future checks
+	// TODO: make this cookie secure
+    let cookie = Cookie::build(("auth_token", jwt_token.clone()))
+        .path("/")
+        .secure(false)
+        .same_site(SameSite::Lax)
+        .http_only(true);
+
+    cookies.add(cookie);
 
     let now: NaiveDateTime = Local::now().naive_local();
     // Check if the user exists in the database
@@ -102,14 +129,14 @@ pub async fn facebook_callback(
             u.access_token = jwt_token;
             u.updated_at = now;
             u.last_login = Some(Utc::now());
-            u.update(&cdb);
+            let _ = u.update(&cdb).await;
         },
         // Insert if it does not exist
         Err(_) => {
             let u = User {
                 id: Uuid::new_v4(),
                 name: Some(user_data.name),
-                profile_picture_url: Some(user_data.picture),
+                profile_picture_url: Some(user_data.picture["data"]["url"].to_string().clone()),
                 email: user_data.email.unwrap_or_default(),
                 password: None,
                 oauth_provider: "facebook".to_string(),
@@ -120,17 +147,17 @@ pub async fn facebook_callback(
                 updated_at: now,
                 last_login: Some(Utc::now()),
             };
-            u.insert(cdb);
+            let _ = u.insert(cdb).await;
         },
 
-    }
-
+    };
 
     match cookies.get("login_uri") {
         Some(uri_cookie) => {
             let cookie_name = String::from(uri_cookie.name());
             let redirect_uri = String::from(uri_cookie.value());
             cookies.remove(Cookie::named(cookie_name));
+            println!("DEBUG redirecting to: {}\n", &redirect_uri);
             Ok(Redirect::to(redirect_uri))
         },
         None =>  Ok(Redirect::to("/")),
@@ -150,19 +177,3 @@ async fn get_facebook_user_data(access_token: &str, client: &Client) -> Result<F
         .json::<FacebookUserInfo>()
         .await
 }
-
-
-
-/*
-    let results = tdb.run(move |connection|
-        crate::schema::users::dsl::users
-            .filter(id.eq(userid))
-            .load::<User>(connection)
-        .expect("Error loading users")
-    ).await;
-    if results.len() > 0 {
-        Ok(Json(results))
-    } else {
-        Err(NotFound(format!("Could not find user: {}", userid)))
-    }
-*/
