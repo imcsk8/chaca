@@ -1,0 +1,20 @@
+FROM registry.fedoraproject.org/fedora-minimal:42
+
+WORKDIR /app
+
+## copy the main binary
+COPY bin/main .
+
+## copy runtime assets which may or may not exist
+#COPY --from=build /build/Rocket.tom[l] ./static
+COPY www/static ./www/static
+COPY templates ./templates
+
+RUN dnf install -y libpq
+
+## create a volume mount point for the config
+VOLUME /config
+
+ENV ROCKET_CONFIG=/config/Rocket.toml
+
+CMD ./main
