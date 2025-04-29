@@ -1,0 +1,20 @@
+[Unit]
+Description=Elector Judicial
+After=network.target
+
+[Container]
+User=elector
+Group=elector
+EnvironmentFile=/etc/elector/container.env
+Image = ${ELECTOR_IMAGE}:${ELECTOR_VERSION}
+Volume=/etc/elector:/config:z
+Network=host
+
+[Service]
+User=elector
+Group=elector
+Restart=on-failure
+TimeoutStartSec=900
+
+[Install]
+WantedBy=default.target
