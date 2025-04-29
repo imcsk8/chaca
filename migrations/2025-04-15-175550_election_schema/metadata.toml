@@ -1,0 +1,4 @@
+# Se ejecuta la migración fuera de transacción porque el
+# control de las transacciones se encuentra en los archivos sql
+
+run_in_transaction = false
