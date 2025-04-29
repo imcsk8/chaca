@@ -50,6 +50,9 @@ fn rocket() -> _ {
                 candidates::get_json,
                 candidates::get_html, candidates::list_all,
                 candidates::list_by_state,
+                candidates::judges_by_state,
+                candidates::mtsj_by_state,
+                candidates::mtdj_by_state,
             ]
         )
         .mount(
