@@ -139,6 +139,7 @@ diesel::table! {
 diesel::table! {
     comments (comment_id) {
         comment_id -> Int4,
+        candidate_id -> Nullable<Uuid>,
         user_id -> Uuid,
         content -> Text,
         parent_comment_id -> Nullable<Int4>,
@@ -177,13 +178,12 @@ diesel::joinable!(candidate -> cat_matter (matter));
 diesel::joinable!(candidate -> cat_poder (poder));
 diesel::joinable!(candidate -> cat_positions (position));
 diesel::joinable!(candidate -> cat_state (state));
-diesel::joinable!(candidate_extras -> candidate (candidate_id));
 diesel::joinable!(candidate_reactions -> candidate (candidate_id));
 diesel::joinable!(candidate_reactions -> users (user_id));
-diesel::joinable!(candidate_social_media -> candidate (candidate_id));
 diesel::joinable!(cat_district -> cat_state (id_inegi));
 diesel::joinable!(comment_reactions -> comments (comment_id));
 diesel::joinable!(comment_reactions -> users (user_id));
+diesel::joinable!(comments -> candidate (candidate_id));
 diesel::joinable!(comments -> users (user_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
