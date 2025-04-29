@@ -18,52 +18,66 @@
    }(document, 'script', 'facebook-jssdk'));
 
 
-/*
-Activar para ver el status
-FB.getLoginStatus(function(response) {
-    statusChangeCallback(response);
-});
-
-Esto trae response
-{
-    status: 'connected',
-    authResponse: {
-        accessToken: '...',
-        expiresIn:'...',
-        signedRequest:'...',
-        userID:'...'
-    }
-}
-
- En status se especifica el estado de inicio de sesión de la persona que usa la aplicación. El estado puede ser uno de los siguientes:
-
-    connected: la persona inició sesión en Facebook y en tu aplicación.
-    not_authorized: la persona inició sesión en Facebook, pero no en tu aplicación.
-    unknown: la persona no inició sesión en Facebook y no sabes si lo hizo en tu aplicación o si se llamó antes al método FB.logout(), por lo que no puede conectarse a Facebook.
-
-authResponse: se incluye si el estado es connected, y consta de los siguientes elementos:
-
-    accessToken: contiene un token de acceso para la persona que usa la aplicación.
-    expiresIn: indica la hora UNIX en que el token caduca y se debe renovar.
-    signedRequest: un parámetro firmado que contiene información sobre la persona que usa la aplicación.
-    userID: es el identificador de la persona que usa la aplicación.
-
-Una vez que la aplicación conoce el estado de inicio de sesión de la persona que la usa, puedes realizar una de estas acciones:
-
-    Si la persona inició sesión en Facebook y en la aplicación, redirígela a la experiencia de sesión iniciada de la aplicación.
-    Si la persona no inició sesión en la aplicación o en Facebook, abre el cuadro de diálogo de inicio de sesión con FB.login() o muéstrale el botón "Iniciar sesión".
-
-*/
-
-function checkLoginState() {
-  FB.getLoginStatus(function(response) {
-    statusChangeCallback(response);
-  });
+    function checkLoginState() {
+        FB.getLoginStatus(function(response) {
+        statusChangeCallback(response);
+    });
 }
 
 </script>
 
 </div>
+
+
+    <style>
+      body {
+        background-color: #f8f9fa;
+        font-family: 'Roboto', sans-serif;
+      }
+      .navbar {
+        background-color: #d22688;
+      }
+      .navbar-brand, .nav-link, .nav-item {
+        color: #fff !important;
+        font-weight: 500;
+      }
+      .hero {
+        background-color: #ffffff;
+        padding: 60px 20px;
+        text-align: center;
+        border-radius: 10px;
+        margin-top: 40px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      }
+      .btn-ine {
+        background-color: #d22688;
+        color: #fff;
+        border: none;
+      }
+      .btn-ine:hover {
+        background-color: #b61e75;
+      }
+      .hero img {
+        max-width: 200px;
+        margin: 20px auto;
+      }
+      footer {
+        font-size: 0.9rem;
+      }
+
+      /* Responsividad extra */
+      @media (max-width: 768px) {
+        .hero {
+          padding: 40px 15px;
+        }
+        .navbar-nav {
+          text-align: center;
+        }
+        .nav-item {
+          margin-bottom: 10px;
+        }
+      }
+    </style>
 
 
     <nav class="navbar navbar-expand-lg">
@@ -75,15 +89,8 @@ function checkLoginState() {
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-              <!-- <a class="nav-link" href="/login"> -->
-<fb:login-button 
-  scope="public_profile,email"
-  onlogin="checkLoginState();">
-</fb:login-button>
-
-
-
-<!-- <i class="fa fa-sign-in"></i> Login</a> -->
+              <a class="nav-link" href="/login/facebook">
+                <i class="fa fa-sign-in"></i> Login</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/logout"><i class="fa fa-sign-out"></i> Logout</a>
@@ -91,6 +98,13 @@ function checkLoginState() {
             <li class="nav-item">
               <a class="nav-link" href="/generate-vote-list"><i class="fa fa-list"></i> Generar listado de voto</a>
             </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="fa fa-home"></i> Inicio</a>
+            </li>
+
+
           </ul>
         </div>
       </div>
