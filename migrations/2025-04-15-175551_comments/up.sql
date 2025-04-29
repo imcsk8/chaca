@@ -9,6 +9,7 @@ ENUM ('NA', 'LIKE','LOVE','LAUGH','DISLIKE','BAD','DANGER');
 
 CREATE TABLE IF NOT EXISTS comments (
     comment_id SERIAL PRIMARY KEY,
+    candidate_id UUID REFERENCES candidate(id) ON DELETE CASCADE,
     user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     content TEXT NOT NULL,
     parent_comment_id INTEGER REFERENCES comments(comment_id) ON DELETE CASCADE,
@@ -37,6 +38,20 @@ USING btree
 CREATE UNIQUE INDEX IF NOT EXISTS idx_parent ON comments
 USING btree
 (
+    user_id
+);
+
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_candidate ON comments
+USING btree
+(
+    candidate_id
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_candidate_user ON comments
+USING btree
+(
+    candidate_id,
     user_id
 );
 
