@@ -75,3 +75,31 @@ macro_rules! candidate_details {
     };
 }
 
+
+/// Macro que genera el query para distintas posiciones
+/// Argumentos:
+/// position: posición a buscar, esta posición está en cat_positions
+#[macro_export]
+macro_rules! position_query {
+    ($position:expr) => {
+        format!("SELECT c.*,
+            CASE
+                WHEN c.sex = 'HOMBRE' THEN concat_ws(' ', p.male_name, p.long_name)
+                WHEN c.sex = 'MUJER' THEN concat_ws(' ', p.female_name, p.long_name)
+                ELSE concat_ws(' ', p.male_name, p.long_name) -- Default fallback
+            END AS position_name,
+            s.name as state_name,
+            d.name as district_name,
+            po.name as poder_name,
+            m.name as matter_name
+        FROM candidate c
+        JOIN cat_state s ON c.state = s.id_inegi
+        JOIN cat_positions p ON c.position = p.id
+        LEFT JOIN cat_district d ON c.district = d.id
+        JOIN cat_poder po ON c.poder = po.uuid
+        LEFT JOIN cat_matter m ON c.matter = m.uuid
+        WHERE c.state = $1 AND c.position={}
+        ORDER BY c.fullname", $position)
+    };
+}
+
