@@ -1,3 +1,3 @@
 -- This file should undo anything in `up.sql`
 
-DELETE FROM candidates;
+DELETE FROM candidate;
