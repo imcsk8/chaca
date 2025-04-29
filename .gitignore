@@ -13,7 +13,7 @@ target/
 Rocket.toml*
 
 data
-www
+www/sync.sh
 .env
 \.*sw?
 
