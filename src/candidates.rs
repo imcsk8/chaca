@@ -1,6 +1,7 @@
 use crate::claims::Claims;
-use chaca_macros::candidate_details;
+use chaca_macros::{candidate_details, position_query};
 use crate::db::*;
+use crate::types::Positions;
 use crate::models::Candidate;
 //use crate::schema::candidate::dsl::*;
 use crate::schema::candidate;
@@ -120,6 +121,7 @@ pub async fn list_by_state(state_id: i32, cdb: ChacaDB) -> Template {
 
     Template::render("candidates_by_state", context! {
         candidates: &results,
+        main: "true",
         count: results.len()
     })
 }
@@ -166,8 +168,12 @@ pub async fn get_html(candidate_id: Uuid, cdb: ChacaDB) -> Result<Template, NotF
             // Build the query with JOINs for all foreign keys
             diesel::sql_query(
                 "SELECT c.*,
+                    CASE
+                        WHEN c.sex = 'HOMBRE' THEN concat_ws(' ', p.male_name, p.long_name)
+                        WHEN c.sex = 'MUJER' THEN concat_ws(' ', p.female_name, p.long_name)
+                        ELSE concat_ws(' ', p.male_name, p.long_name) -- Default fallback
+                    END AS position_name,
                     s.name as state_name,
-                    p.cargo as position_name,
                     d.name as district_name,
                     po.name as poder_name,
                     m.name as matter_name
@@ -215,6 +221,84 @@ pub async fn delete(
     } else {
         Err(NotFound(format!("Could not find candidate: {}", candidateid)))
     }
+}
+
+
+/*******************************************************************************
+*                                                                              *
+*                                                                              *
+*                      P O S I T I O N  E N D P O I N T S                      *
+*                                                                              *
+*                                                                              *
+********************************************************************************/
+
+
+
+/// Show candidates for judge given in `<state_id>`
+#[get("/judges/<state_id>")]
+pub async fn judges_by_state(state_id: i32, cdb: ChacaDB) -> Template {
+    let results = cdb
+        .run(move |connection| {
+            // Shows the CandidateWithDetails structure and needed modules
+            candidate_details!();
+            // Build the query with JOINs for all foreign keys
+            diesel::sql_query(
+                position_query!(Positions::JuezPrimera)
+            )
+            .bind::<Integer, _>(state_id)
+            .load::<CandidateWithDetails>(connection)
+            .expect("Error loading candidates with details")
+        })
+        .await;
+
+    Template::render("candidates_by_state", context! {
+        candidates: &results,
+        count: results.len()
+    })
+}
+
+/// Show candidates for mtsj given in `<state_id>`
+#[get("/mtsj/<state_id>")]
+pub async fn mtsj_by_state(state_id: i32, cdb: ChacaDB) -> Template {
+    let results = cdb
+        .run(move |connection| {
+            // Shows the CandidateWithDetails structure and needed modules
+            candidate_details!();
+            diesel::sql_query(
+                position_query!(Positions::Mtsj)
+            )
+            .bind::<Integer, _>(state_id)
+            .load::<CandidateWithDetails>(connection)
+            .expect("Error loading candidates with details")
+        })
+        .await;
+
+    Template::render("candidates_by_state", context! {
+        candidates: &results,
+        count: results.len()
+    })
+}
+
+/// Show candidates for mtdj given in `<state_id>`
+#[get("/mtdj/<state_id>")]
+pub async fn mtdj_by_state(state_id: i32, cdb: ChacaDB) -> Template {
+    let results = cdb
+        .run(move |connection| {
+            // Shows the CandidateWithDetails structure and needed modules
+            candidate_details!();
+            diesel::sql_query(
+                position_query!(Positions::Mtdj)
+            )
+            .bind::<Integer, _>(state_id)
+            .load::<CandidateWithDetails>(connection)
+            .expect("Error loading candidates with details")
+        })
+        .await;
+
+    Template::render("candidates_by_state", context! {
+        candidates: &results,
+        count: results.len()
+    })
 }
 
 
