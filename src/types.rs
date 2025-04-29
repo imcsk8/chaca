@@ -6,6 +6,7 @@ use diesel::pg::{Pg,PgValue};
 use diesel::serialize::{IsNull,Output,ToSql};
 use std::io::Write;
 use serde::{Serialize, Deserialize};
+use std::fmt::{Display, Formatter, Result};
 
 
 // Enum for types of reactions
@@ -19,7 +20,7 @@ pub struct ReactionType;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, AsExpression, FromSqlRow, Serialize, Deserialize)]
 #[diesel(sql_type = ReactionType)]
 pub enum Reaction {
-	NA,
+    NA,
     Like,
     Love,
     Laugh,
@@ -106,14 +107,14 @@ impl ToString for Reaction {
 pub struct SexoType;
 
 impl Expression for SexoType {
-	type SqlType = SexoType;
+    type SqlType = SexoType;
 }
 
 //#[derive(Clone, Debug, AsExpression )]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, AsExpression, FromSqlRow, Serialize, Deserialize)]
 #[diesel(sql_type = SexoType)]
 pub enum Sexo {
-	ND,
+    ND,
     Hombre,
     Mujer,
 }
@@ -244,5 +245,25 @@ impl ToString for AmbitoEleccion {
             AmbitoEleccion::Estatal => String::from("ESTATAL"),
             AmbitoEleccion::Federal => String::from("FEDERAL"),
         }
+    }
+}
+
+
+/// Representation of the cat_positions catalog contents
+#[repr(i32)]
+#[derive(Debug, Clone)]
+pub enum Positions {
+    JuezPrimera  = 1,
+    JuezDistrito = 2,
+    Mtsj         = 3,
+    Mtdj         = 4,
+    Mscjn        = 5,
+}
+
+/// Display for Positions enum
+impl Display for Positions {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        let value = self.clone() as i32;
+        write!(f, "{}", value)
     }
 }
