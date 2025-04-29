@@ -12,6 +12,7 @@ target/
 # Configuration file
 Rocket.toml*
 
+bin
 data
 www/sync.sh
 .env
