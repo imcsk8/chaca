@@ -135,6 +135,7 @@ pub struct CommentReaction {
 #[diesel(table_name = comments)]
 pub struct Comment {
     pub comment_id: i32,
+    pub candidate_id: Option<Uuid>,
     pub user_id: Uuid,
     pub content: String,
     pub parent_comment_id: Option<i32>,
