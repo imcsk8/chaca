@@ -9,7 +9,12 @@
 ./data:
 	mkdir data
 
+./bin:
+	mkdir bin
+
 dirs: www/static data .env
+
+release_dirs: bin
 
 db: data
 	podman run -d --replace --name=chaca_pg                      \
@@ -31,3 +36,8 @@ debug: dirs db
 
 clean:
 	cargo clean
+
+release: release_dirs
+	cargo build --release; \
+		objcopy --compress-debug-sections target/release/chaca ./bin/main
+
