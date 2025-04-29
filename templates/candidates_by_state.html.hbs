@@ -19,11 +19,34 @@
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-md-8 text-center mb-4">
-            <h2 class="heading-section">Candidatos de {{ candidates.0.state_name }}</h2>
+            <h2 class="heading-section">Candidatos de {{ candidates.0.state_name }} {{#unless main}}{{ candidates.0.position_name  }}{{/unless}}</h2>
             <p>Total: {{count}} candidatos</p>
           </div>
         </div>
         
+        <!-- New menu with requested options -->
+        <div class="row justify-content-center">
+          <div class="col-md-8 mb-4">
+            <div class="position-filter-menu">
+              <ul class="nav nav-pills nav-justified menu-list">
+                <li class="nav-item menu-item btn btn-primary">
+                  <a class="nav-link active btn btn-primary" href="/candidates/judges/{{ candidates.0.state }}" data-filter="jueces">Jueces <br />de<br />Primera Instancia</a>
+                </li>
+                <li class="nav-item menu-item btn btn-primary">
+                  <a class="nav-link active btn btn-primary" href="/candidates/mtsj/{{ candidates.0.state }}" data-filter="magistrados-tsj">Magistrados Tribunal Superior de Justicia</a>
+                </li>
+                <li class="nav-item menu-item btn btn-primary">
+                  <a class="nav-link active btn btn-primary" href="/candidates/mtdj/{{ candidates.0.state }}" data-filter="magistrados-dj">Magistrados Tribunal de Disciplina Judicial</a>
+                </li>
+                <li class="nav-item menu-item btn btn-primary">
+                  <a class="nav-link active btn btn-primary" style="text-align: center; padding-top: 25%" href="/candidates/{{ candidates.0.state }}" data-filter="todos">Todos</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+
         <div class="row justify-content-center">
           <div class="col-md-8 mb-4">
             <div class="search-box">
@@ -50,7 +73,7 @@
                     <th>Distrito</th>
                     <th>Poder</th>
                     <th>Contacto</th>
-                    <th>Actions</th>
+                    <th>Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -130,6 +153,7 @@
       });
       
       $(document).ready(function() {
+
         // Pagination configuration
         const rowsPerPage = 50;
         const rows = $('#candidatesTable tbody tr');
