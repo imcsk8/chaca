@@ -100,8 +100,12 @@ pub async fn list_by_state(state_id: i32, cdb: ChacaDB) -> Template {
             // Build the query with JOINs for all foreign keys
             diesel::sql_query(
                 "SELECT c.*,
+                    CASE
+                        WHEN c.sex = 'HOMBRE' THEN concat_ws(' ', p.male_name, p.long_name)
+                        WHEN c.sex = 'MUJER' THEN concat_ws(' ', p.female_name, p.long_name)
+                        ELSE concat_ws(' ', p.male_name, p.long_name) -- Default fallback
+                    END AS position_name,
                     s.name as state_name,
-                    p.cargo as position_name,
                     d.name as district_name,
                     po.name as poder_name,
                     m.name as matter_name
