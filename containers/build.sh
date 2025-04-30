@@ -6,11 +6,19 @@ if [[ $1 == "" ]]; then
 fi
 
 VERSION=$1
+IMAGE_NAME="registry.sotolitolabs.com:5000/electorjudicial"
+
+pushd ../
+echo "Building chaca chaca"
+make release
 
 echo "Building container"
-pushd ../
-podman build -t registry.sotolitolabs.com/electorjudicial:${VERSION} -f containers/Containerfile .
+podman build -t ${IMAGE_NAME}:${VERSION} -f containers/Containerfile .
 popd
 
-podman tag registry.sotolitolabs.com/electorjudicial:${VERSION} registry.sotolitolabs.com/electorjudicial:latest
+echo "Tagging Latest"
+podman tag ${IMAGE_NAME}:${VERSION} ${IMAGE_NAME}:latest
 
+echo "Pushing to remote registry"
+podman push --tls-verify=false ${IMAGE_NAME}:${VERSION}
+podman push --tls-verify=false ${IMAGE_NAME}:latest
