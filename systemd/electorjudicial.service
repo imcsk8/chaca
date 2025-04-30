@@ -1,0 +1,46 @@
+# NOTE:
+# We use this service while we fix the quadlet bug that does not set
+# --cidfile=%t/%U/%N.cid.
+# right now quadlet just puts: %t/%N.cid
+# TODO: create bug and fix:
+# https://github.com/containers/podman/blob/main/pkg/systemd/quadlet/quadlet.go#L1621
+#
+[Unit]
+Wants=network-online.target
+After=network-online.target
+Description=Elector Judicial
+After=network.target
+SourcePath=/etc/containers/systemd/electorjudicial.container
+RequiresMountsFor=%t/containers
+RequiresMountsFor=/etc/elector
+
+[X-Container]
+User=elector
+Group=elector
+EnvironmentFile=/etc/elector/container.env
+Image=${ELECTOR_IMAGE}:${ELECTOR_VERSION}
+Volume=/etc/elector:/config:z
+Network=host
+PublishPort=8001:8001
+
+[Service]
+EnvironmentFile=/etc/elector/container.env
+User=elector
+Group=elector
+Restart=on-failure
+TimeoutStartSec=900
+RuntimeDirectory=%U
+RuntimeDirectoryMode=0775
+Environment=PODMAN_SYSTEMD_UNIT=%n
+KillMode=mixed
+ExecStop=/usr/bin/podman rm -v -f -i --cidfile=%t/%U/%N.cid
+ExecStopPost=-/usr/bin/podman rm -v -f -i --cidfile=%t/%U/%N.cid
+Delegate=yes
+Type=notify
+NotifyAccess=all
+SyslogIdentifier=%N
+ExecStart=/usr/bin/podman run --name systemd-%N --cidfile=%t/%U/%N.cid --replace --rm --cgroups=split --network host --sdnotify=conmon -d -v /etc/elector:/config:z --publish 8001:8001 --env-file /etc/elector/container.env ${ELECTOR_IMAGE}:${ELECTOR_VERSION}
+
+[Install]
+WantedBy=default.target
+
