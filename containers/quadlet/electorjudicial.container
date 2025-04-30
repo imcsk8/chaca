@@ -9,12 +9,17 @@ EnvironmentFile=/etc/elector/container.env
 Image = ${ELECTOR_IMAGE}:${ELECTOR_VERSION}
 Volume=/etc/elector:/config:z
 Network=host
+PublishPort = 8001:8001
 
 [Service]
+RuntimeDirectory=elector
+RuntimeDirectoryMode=0775
+EnvironmentFile=/etc/elector/container.env
 User=elector
 Group=elector
 Restart=on-failure
 TimeoutStartSec=900
+
 
 [Install]
 WantedBy=default.target
