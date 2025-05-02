@@ -9,11 +9,11 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/public/css/style.css">
-	{{> fb_headers }}
+    {{> fb_headers }}
   </head>
   <body>
 
-	{{> navbar }}
+    {{> navbar }}
 
     <section class="ftco-section">
       <div class="container">
@@ -54,7 +54,7 @@
                 <input type="text" id="searchInput" class="form-control" placeholder="Buscar candidatos...">
                 <div class="input-group-append">
                   <button class="btn btn-primary" id="searchButton">
-                    <i class="fa fa-search"></i> Search
+                    <i class="fa fa-search"></i> Buscar
                   </button>
                 </div>
               </div>
@@ -79,15 +79,55 @@
                 <tbody>
                   {{#each candidates}}
                   <tr class="candidate-row" data-fullname="{{this.fullname}}" data-position="{{this.position_name}}" data-state="{{this.state_name}}">
-                    <td class="d-flex align-items-center" onClick="window.open('/candidates/{{this.id}}', '_blank')" style="cursor: pointer">
+                    <td class="d-flex align-items-center" style="cursor: pointer">
                       {{#if this.image_url}}
-                      <div class="avatar-img" style="background-image: url({{this.image_url}});"></div>
+                      <div class="avatar-content" onClick="window.open('/candidates/{{this.id}}', '_blank')" >
+                        <center>
+                            <img class="avatar-img" loading="lazy" src="{{this.image_url}}" />
+                            <br />
+                            <span class="badge bg-primary" style="font-size: 10px; width: auto">
+                                Ver Perfil
+                            </span>
+                         </center>
+                         <br />
+                      </div>
                       {{else}}
-                      <div class="avatar-img" style="background-image: url(/api/placeholder/50/50);"></div>
+                      <div class="avatar-content" onClick="window.open('/candidates/{{this.id}}', '_blank')" >
+                        <img class="avatar-img" loading="lazy" src="/api/placeholder/50/50" />
+                      </div>
                       {{/if}}
                       <div class="pl-3">
-                        <span class="font-weight-bold">{{this.fullname}}</span>
+                        <span onClick="window.open('/candidates/{{this.id}}', '_blank')"  class="font-weight-bold">{{this.fullname}}</span>
                         <br>
+
+
+                      <!-- Reaction buttons -->
+                      <div class="mt-2">
+                        <div class="reaction-group">
+                          <!-- Like Button -->
+                          <button class="btn btn-sm btn-outline-success reaction-btn" data-candidate-id="{{this.id}}" data-reaction-type="LIKE">
+                            <i class="fa fa-thumbs-up"></i>
+                          </button>
+                          <span class="reaction-count" id="like-count-{{this.id}}">0</span>
+                          
+                          <!-- Dislike Button -->
+                          <button class="btn btn-sm btn-outline-secondary reaction-btn" data-candidate-id="{{this.id}}" data-reaction-type="DISLIKE">
+                            <i class="fa fa-thumbs-down"></i>
+                          </button>
+                          <span class="reaction-count" id="dislike-count-{{this.id}}">0</span>
+                          
+                          <!-- Danger Button -->
+                          <button class="btn btn-sm btn-outline-danger reaction-btn" data-candidate-id="{{this.id}}" data-reaction-type="DANGER">
+                            <i class="fa fa-exclamation-triangle"></i>
+                          </button>
+                          <span class="reaction-count" id="danger-count-{{this.id}}">0</span>
+                        </div>
+                      </div>
+
+
+
+
+
                         <small>Edad: {{this.age}}&nbsp;</small>
                         {{#if (eq this.sex "Hombre")}}
                         <span class="badge badge-info">H</span>
@@ -96,7 +136,9 @@
                         {{/if}}
                       </div>
                     </td>
-                    <td>{{this.position_name}}</td>
+                    <td>
+                        {{this.position_name}}
+                    </td>
                     <td>{{#if this.district_name}}{{this.district_name}}{{else}}N/A{{/if}}</td>
                     <td>{{this.poder_name}}</td>
                     <td>
@@ -123,6 +165,10 @@
                         </a>
                         {{/if}}
                       </div>
+
+
+
+
                     </td>
                   </tr>
                   {{/each}}
@@ -145,14 +191,92 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+        
+    <style>
+      .reaction-group {
+        display: flex;
+        align-items: center;
+      }
+      
+      .reaction-count {
+        margin-right: 10px;
+        font-size: 12px;
+        font-weight: bold;
+      }
+      
+      .reaction-btn {
+        margin-right: 3px;
+      }
+    </style>
+
+
+
     <script>
+      // Glbal variables
+      const LOGIN_PATH = "/login/facebook";
+      var CURRENT_USER = {};
       // Register Handlebars helper for equality check
       Handlebars.registerHelper('eq', function(a, b) {
         return a === b;
       });
       
       $(document).ready(function() {
+        // Checks every 30 minutes
+        setupLoginCheck(30);
+
+/* TODO sacar esto directo en el template
+        function loadAllReactions() {
+          // Get all candidate IDs from the table
+          const candidateRows = $('#candidatesTable tbody tr');
+          
+          candidateRows.each(function() {
+            const candidateId = $(this).data('id');
+            loadCandidateReactions(candidateId);
+          });
+        }
+        
+        // Function to load reactions for a single candidate
+        function loadCandidateReactions(candidateId) {
+          $.ajax({
+            url: `/candidates/${candidateId}/reactions`,
+            method: 'GET',
+            success: function(data) {
+              // Update reaction counts
+              $('#like-count-' + candidateId).text(data.LIKE || 0);
+              $('#dislike-count-' + candidateId).text(data.DISLIKE || 0);
+              $('#danger-count-' + candidateId).text(data.DANGER || 0);
+            },
+            error: function(err) {
+              console.error('Error loading reactions for candidate', candidateId, err);
+            }
+          });
+        }
+ */       
+
+        // Handle reaction button clicks
+        $(document).on('click', '.reaction-btn', function() {
+          const candidateId = $(this).data('candidate-id');
+          const reactionType = $(this).data('reaction-type');
+          
+          logged = Cookie.get('logged');
+          // Send reaction to server
+          $.ajax({
+            url: `/candidates/${candidateId}/reaction`,
+            method: 'PUT',
+            data: JSON.stringify({ reaction: reactionType }),
+            contentType: 'application/json',
+            success: function() {
+              // Reload reactions for this candidate to update counts
+              loadCandidateReactions(candidateId);
+            },
+            error: function(err) {
+              console.error('Error sending reaction', err);
+            }
+          });
+        });
+
+
 
         // Pagination configuration
         const rowsPerPage = 50;
@@ -266,6 +390,56 @@
           //}
         });
       });
+
+
+
+    // Ask the API for user status, if logged it returns user info
+    function checkLoginStatus() {
+        $.ajax({
+            url: '/auth/logged',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data, statis, xhr) {
+                // User is logged in since we received valid JSON
+                var output = JSON.stringify(xhr);
+                console.log('User is logged in:', data);
+                // Set current user
+                CURRENT_USER = data;
+                // Update UI
+                toggleLoginInfo();
+            },
+            error: function(xhr, status, error) {
+                var output = JSON.stringify(xhr);
+                console.log(`User is not logged in, working with limited actions: ${output}`);
+                CURRENT_USER = {};
+            }
+        });
+    }
+
+
+    // Check if the user is logged in
+    function setupLoginCheck(interval) {
+        // Run immediately on page load
+        console.log("Checking login status for user: ${current_user}");
+        checkLoginStatus();
+
+        // Then run every interval minutes
+        setInterval(checkLoginStatus, interval * 60 * 1000);
+          
+        // Optional: Also check when the window regains focus
+        $(window).focus(function() {
+            checkLoginStatus();
+        });
+    }
+
+    // Toggle login controls
+    function toggleLoginInfo() {
+        // TODO: Add more info
+        var concat = $("#user_info").html() + " " + CURRENT_USER.name;
+        $('#user_info').html(concat);
+        $('#login_button').hide();
+        $('#user_info').show();
+    }
     </script>
   </body>
 </html>
