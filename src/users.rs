@@ -113,6 +113,7 @@ Result<Json<String>, NotFound<String>> {
     }
 }
 
+/*TODO: update for new AppUser: get the user uuid from the database
 #[get("/me")]
 pub async fn me(claim: Claims) -> Json<AppUser> {
     Json(AppUser {
@@ -121,7 +122,7 @@ pub async fn me(claim: Claims) -> Json<AppUser> {
         email: claim.email,
     })
 }
-
+*/
 
 /*******************************************************************************
 *                                                                              *
