@@ -6,11 +6,11 @@ use diesel::sql_query;
 use diesel::sql_types::Text;
 
 /// Authentication functionalities
-use rocket::{get, post, routes, uri, Request, response::Redirect, State, http::Status};
+use rocket::{get, post, routes, uri, Request, response::Redirect, State};
 use rocket::response::status::Custom;
 use rocket::response::status;
 use rocket::serde::json::Json;
-use rocket::http::{Cookie, CookieJar, Header, SameSite};
+use rocket::http::{Cookie, CookieJar, Header, SameSite, Status};
 use serde::{Deserialize, Serialize};
 use rocket_oauth2::{OAuth2, TokenResponse};
 use std::sync::Arc;
@@ -64,16 +64,17 @@ pub fn login(req: Json<LoginRequest>, state: &State<AppState>) -> Result<Json<Lo
 /// Logout
 #[get("/logout")]
 pub fn logout(
-	//claim: Claims,
-	state: &State<AppState>,
-	cookies: &CookieJar<'_>
+    //claim: Claims,
+    state: &State<AppState>,
+    cookies: &CookieJar<'_>
 ) -> Redirect {
-	info!("Info level: {:#?}", cookies);
+    info!("Info level: {:#?}", cookies);
     match cookies.get("login_uri") {
         Some(uri_cookie) => {
-			let cookie_name = String::from(uri_cookie.name());
-			cookies.remove(Cookie::named(cookie_name));
-			cookies.remove(Cookie::named("auth_token"));
+            let cookie_name = String::from(uri_cookie.name());
+            cookies.remove(Cookie::named(cookie_name));
+            cookies.remove(Cookie::named("auth_token"));
+            cookies.remove(Cookie::named("logged"));
         },
         None =>  {}
     }
@@ -112,7 +113,7 @@ pub async fn facebook_callback(
     let jwt_token = claim.into_facebook_token(&user_data, &state.jwt_secret)?;
 
     // Set the token in a cookie for future checks
-	// TODO: make this cookie secure
+    // TODO: make this cookie secure
     let cookie = Cookie::build(("auth_token", jwt_token.clone()))
         .path("/")
         .secure(false)
@@ -120,6 +121,17 @@ pub async fn facebook_callback(
         .http_only(true);
 
     cookies.add(cookie);
+
+    // Set a cookie that indicates that a user is logged in
+    // TODO: make this cookie secure
+    let cookie = Cookie::build(("logged", "true"))
+        .path("/")
+        .secure(false)
+        .same_site(SameSite::Lax)
+        .http_only(false);
+
+    cookies.add(cookie);
+
 
     let now: NaiveDateTime = Local::now().naive_local();
     // Check if the user exists in the database
@@ -176,4 +188,18 @@ async fn get_facebook_user_data(access_token: &str, client: &Client) -> Result<F
         .await?
         .json::<FacebookUserInfo>()
         .await
+}
+
+/// Check if user is logged by checking the JWT token
+#[get("/auth/logged")]
+pub fn logged(
+    state: &State<AppState>,
+    cookies: &CookieJar<'_>
+) -> Result<Status, status::Custom<String>> {
+    // Redirect to Facebook for authentication
+    println!("Checking cookies: {:#?}", cookies);
+    if Claims::is_logged(cookies.get("auth_token"), &state.jwt_secret) {
+        return Ok(Status::Ok)
+    }
+    Ok(Status::Unauthorized)
 }
