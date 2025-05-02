@@ -74,6 +74,14 @@ pub struct AppState {
     pub jwt_secret: String,
 }
 
+/// Authenticated user for the frontend
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AppUser {
+    pub id: String,
+    pub name: String,
+    pub email: Option<String>,
+}
+
 //Rocket request guard
 #[rocket::async_trait]
 impl<'r> FromRequest<'r> for Claims {
@@ -139,7 +147,7 @@ impl Claims {
     }
 
     /// Create Claims from a 'cookie' value
-    fn from_cookie(cookie: &Cookie, secret: &String) -> Result<Self, AuthenticationError> {
+    pub fn from_cookie(cookie: &Cookie, secret: &String) -> Result<Self, AuthenticationError> {
         let token = String::from(cookie.value());
 
         // Get claims from a JWT
@@ -208,12 +216,15 @@ impl Claims {
         Ok(token)
     }
 
-    // Check if the auth token is valid
+    /// Check if the auth token is valid
+    /// TODO: maybe? remove
     pub fn is_logged(cookie: Option<&Cookie>, secret: &String) -> bool {
         // Check if we have a cookie
         match cookie {
             Some(t) =>  match Claims::from_cookie(&t, &secret) {
-                Ok(c) => return true,
+                Ok(c) => {
+                    return true;
+                },
                 Err(e) => return false,
             },
             None => false
