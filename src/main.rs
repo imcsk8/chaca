@@ -59,6 +59,7 @@ fn rocket() -> _ {
                 candidates::mtsj_by_state,
                 candidates::mtdj_by_state,
                 candidates::add_reaction,
+                candidates::get_reactions,
             ]
         )
         /*.mount(
