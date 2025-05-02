@@ -190,16 +190,25 @@ async fn get_facebook_user_data(access_token: &str, client: &Client) -> Result<F
         .await
 }
 
+
 /// Check if user is logged by checking the JWT token
+/// Returns AppUser to the frontend
 #[get("/auth/logged")]
 pub fn logged(
     state: &State<AppState>,
     cookies: &CookieJar<'_>
-) -> Result<Status, status::Custom<String>> {
-    // Redirect to Facebook for authentication
-    println!("Checking cookies: {:#?}", cookies);
-    if Claims::is_logged(cookies.get("auth_token"), &state.jwt_secret) {
-        return Ok(Status::Ok)
+) -> Result<Json<AppUser>, Status> {
+    match cookies.get("auth_token") {
+        Some(t) =>  match Claims::from_cookie(t, &state.jwt_secret) {
+            Ok(c) => {
+                Ok(Json(AppUser {
+                    id: c.id,
+                    name: c.name,
+                    email: c.email,
+                }))
+        },
+            Err(e) => return Err(Status::Unauthorized),
+        },
+        None => return Err(Status::Unauthorized),
     }
-    Ok(Status::Unauthorized)
 }
