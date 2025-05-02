@@ -61,10 +61,10 @@ fn rocket() -> _ {
                 candidates::add_reaction,
             ]
         )
-        .mount(
+        /*.mount(
             "/users",
             routes![users::me,
-        ])
+        ])*/
         .mount("/public", FileServer::from(STATIC_FILES_DIR))
         .manage(app_state)
         .register("/", catchers![unauthorized_catcher])
