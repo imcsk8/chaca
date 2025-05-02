@@ -40,9 +40,14 @@ fn rocket() -> _ {
     };
 
     rocket::build()
-    //.mount("/", routes![auth::login, auth::facebook_login,
-    .mount("/", routes![auth::logout, auth::facebook_login,
-                            auth::facebook_callback])
+        .mount(
+            "/",
+            routes![
+                auth::logout,
+                auth::facebook_login,
+                auth::facebook_callback,
+                auth::logged,
+        ])
         .mount(
             "/candidates",
             routes![
@@ -53,12 +58,13 @@ fn rocket() -> _ {
                 candidates::judges_by_state,
                 candidates::mtsj_by_state,
                 candidates::mtdj_by_state,
+                candidates::add_reaction,
             ]
         )
         .mount(
             "/users",
-            routes![users::me],
-        )
+            routes![users::me,
+        ])
         .mount("/public", FileServer::from(STATIC_FILES_DIR))
         .manage(app_state)
         .register("/", catchers![unauthorized_catcher])
@@ -80,7 +86,7 @@ fn unauthorized_catcher(req: &Request) -> Redirect {
         .path("/")
         .secure(false)
         .same_site(SameSite::Lax)
-        .http_only(true);
+        .http_only(false);
     cookies.add(cookie);
     Redirect::to(uri!(facebook_login))
 }
