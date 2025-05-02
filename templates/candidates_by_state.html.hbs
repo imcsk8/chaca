@@ -256,24 +256,28 @@
 
         // Handle reaction button clicks
         $(document).on('click', '.reaction-btn', function() {
-          const candidateId = $(this).data('candidate-id');
-          const reactionType = $(this).data('reaction-type');
+            const candidateId = $(this).data('candidate-id');
+            const reactionType = $(this).data('reaction-type');
           
-          logged = Cookie.get('logged');
-          // Send reaction to server
-          $.ajax({
-            url: `/candidates/${candidateId}/reaction`,
-            method: 'PUT',
-            data: JSON.stringify({ reaction: reactionType }),
-            contentType: 'application/json',
-            success: function() {
-              // Reload reactions for this candidate to update counts
-              loadCandidateReactions(candidateId);
-            },
-            error: function(err) {
-              console.error('Error sending reaction', err);
+            if ( isEmpty(CURRENT_USER) ) {
+                alert("Debes acceder antes de poder comentar o poner una reacción");
+                return;
             }
-          });
+            // Send reaction to server
+            $.ajax({
+                url: `/candidates/${candidateId}/reaction`,
+                method: 'PUT',
+                data: JSON.stringify({ reaction: reactionType }),
+                contentType: 'application/json',
+                success: function() {
+                    // Reload reactions for this candidate to update counts
+                    console.log("Load reactions...");
+                    //loadCandidateReactions(candidateId);
+                },
+                error: function(err) {
+                    console.error('Error sending reaction', err);
+                }
+            });
         });
 
 
@@ -439,6 +443,17 @@
         $('#user_info').html(concat);
         $('#login_button').hide();
         $('#user_info').show();
+    }
+
+    // Checks if a object is empty
+    function isEmpty(obj) {
+        // Check if obj is null or not an object
+        if (obj === null || typeof obj !== 'object') {
+            throw new TypeError('Input must be an object');
+        }
+  
+        // Check if object has any own enumerable properties
+        return Object.keys(obj).length === 0;
     }
     </script>
   </body>
