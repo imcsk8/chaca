@@ -1,19 +1,21 @@
 use crate::claims::Claims;
 use chaca_macros::{candidate_details, position_query};
 use crate::db::*;
-use crate::types::Positions;
-use crate::models::Candidate;
+use crate::types::{Positions, Reaction};
+use crate::models::{Candidate, CandidateReaction};
 //use crate::schema::candidate::dsl::*;
 use crate::schema::candidate;
+use crate::schema::candidate_reactions;
 use diesel::prelude::*;
 use rocket::response::{Debug, Redirect, status::Created, status::NotFound};
 use rocket::serde::json::Json;
 use rocket::serde::uuid::Uuid;
-use rocket::{delete, get, post, uri};
+use rocket::{delete, get, post, put};
 use rocket_dyn_templates::{context, Template};
 use rocket_sync_db_pools::diesel;
 use serde_json::json;
 use rocket::serde::{Deserialize, Serialize};
+//use uuid::{parse_str};
 
 type Result<T, E = Debug<diesel::result::Error>> = std::result::Result<T, E>;
 
@@ -130,8 +132,6 @@ pub async fn list_by_state(state_id: i32, cdb: ChacaDB) -> Template {
     })
 }
 
-
-
 /// Get a candidate and returns it as a JSON object
 #[get("/<candidateid>", format="json", rank = 1)]
 pub async fn get_json(candidateid: Uuid, cdb: ChacaDB) -> Result<Json<Vec<Candidate>>, NotFound<String>> {
@@ -228,6 +228,7 @@ pub async fn delete(
 }
 
 
+
 /*******************************************************************************
 *                                                                              *
 *                                                                              *
@@ -303,6 +304,48 @@ pub async fn mtdj_by_state(state_id: i32, cdb: ChacaDB) -> Template {
         candidates: &results,
         count: results.len()
     })
+}
+
+
+/*******************************************************************************
+*                                                                              *
+*                                                                              *
+*                      R E A C T I O N  E N D P O I N T S                      *
+*                                                                              *
+*                                                                              *
+********************************************************************************/
+
+
+/// Creates an candidate reaction
+#[put("/<candidate_id>/reaction", format = "json", data = "<candidate_reaction>")]
+pub async fn add_reaction(
+    candidate_id: Uuid,
+    user: Claims,
+    cdb: ChacaDB,
+    candidate_reaction: Json<CandidateReaction>
+) -> Result<Created<Json<CandidateReaction>>> {
+    // TODO: This expect should never happen but we need better error handling
+    let user_uuid = Uuid::parse_str(&user.id).expect("Wrong user id");
+    //use crate::schema::candidate_reactions::dsl::*;
+
+    let input_reaction = candidate_reaction.into_inner();
+    let reaction_type_val = Reaction::from(input_reaction.reaction_type);
+
+    let reaction: CandidateReaction = cdb
+        .run(move |conn| {
+            diesel::insert_into(crate::schema::candidate_reactions::dsl::candidate_reactions)
+                .values((
+                    crate::schema::candidate_reactions::candidate_id.eq(&candidate_id),
+                    crate::schema::candidate_reactions::user_id.eq(user_uuid),
+                    crate::schema::candidate_reactions::reaction_type.eq(reaction_type_val)
+                ))
+                .get_result(conn)
+                .expect("Error saving new candidate")
+        })
+        .await;
+
+    Ok(Created::new("/").body(Json(reaction)))
+    //Ok(Created::new("/").body(Json(reaction)))
 }
 
 
