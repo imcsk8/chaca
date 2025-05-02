@@ -18,6 +18,14 @@ use diesel::result::Error;
 
 type Result<T, E = Debug<diesel::result::Error>> = std::result::Result<T, E>;
 
+/// Authenticated user for the frontend
+#[derive(Debug, Serialize, Deserialize)]
+struct AppUser {
+    id: String,
+    name: String,
+    email: Option<String>,
+}
+
 /// Creates a user
 #[post("/add", format = "json", data = "<arg_user>")]
 pub async fn add(arg_user: Json<User>, _user: Claims, tdb: ChacaDB) ->
@@ -113,17 +121,9 @@ Result<Json<String>, NotFound<String>> {
     }
 }
 
-// TODO: This is for testing, make this a proper endpoint
-#[derive(Debug, Serialize, Deserialize)]
-struct MyUser {
-    id: String,
-    name: String,
-    email: Option<String>,
-}
-
 #[get("/me")]
-pub async fn me(claim: Claims) -> Json<MyUser> {
-    Json(MyUser {
+pub async fn me(claim: Claims) -> Json<AppUser> {
+    Json(AppUser {
         id: claim.id,
         name: claim.name,
         email: claim.email,
