@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 use reqwest::Client;
 use crate::db::*;
 use rocket::serde::json::{Json, Value};
+use rocket::serde::uuid::Uuid;
 
 const BEARER: &str = "Bearer";
 const AUTHORIZATION: &str = "Authorization";
@@ -77,7 +78,8 @@ pub struct AppState {
 /// Authenticated user for the frontend
 #[derive(Debug, Serialize, Deserialize)]
 pub struct AppUser {
-    pub id: String,
+    pub id: Uuid,
+    pub oauth_id: String,
     pub name: String,
     pub email: Option<String>,
 }
