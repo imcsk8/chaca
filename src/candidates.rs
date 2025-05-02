@@ -17,9 +17,23 @@ use rocket_sync_db_pools::diesel;
 use rocket::http::Status;
 use serde_json::json;
 use rocket::serde::{Deserialize, Serialize};
+use diesel::sql_types::{BigInt, Uuid as SqlUuid};
+use diesel::QueryableByName;
 //use uuid::{parse_str};
 
 type Result<T, E = Debug<diesel::result::Error>> = std::result::Result<T, E>;
+
+#[derive(Queryable, QueryableByName, Serialize, Deserialize, Debug)]
+pub struct CandidateReactions {
+    #[diesel(sql_type = SqlUuid)]
+    pub candidate_id: uuid::Uuid,
+    #[diesel(sql_type = BigInt)]
+    pub like_count: i64,
+    #[diesel(sql_type = BigInt)]
+    pub dislike_count: i64,
+    #[diesel(sql_type = BigInt)]
+    pub danger_count: i64,
+}
 
 /// Creates an candidate
 #[post("/add", format = "json", data = "<arg_candidate>")]
@@ -57,6 +71,15 @@ pub async fn list(cdb: ChacaDB) -> Template {
     Template::render("candidates", context! {candidates: &results, count: results.len()})
 }
 */
+
+
+/*******************************************************************************
+*                                                                              *
+*                                                                              *
+*                           L I S T   F U N C T I O N S                        *
+*                                                                              *
+*                                                                              *
+********************************************************************************/
 
 /// Show all candidates
 #[get("/")]
@@ -155,16 +178,6 @@ pub async fn get_json(candidateid: Uuid, cdb: ChacaDB) -> Result<Json<Vec<Candid
 /// Get a candidate and returns it as a JSON object
 #[get("/<candidate_id>", format="text/html", rank=2)]
 pub async fn get_html(candidate_id: Uuid, cdb: ChacaDB) -> Result<Template, NotFound<String>> {
-    /*let results = cdb
-        .run(move |connection| {
-            crate::schema::candidate::dsl::candidate
-                .filter(crate::schema::candidate::id.eq(candidateid))
-                .load::<Candidate>(connection)
-                .expect("Error loading candidate")
-        })
-        .await;*/
-
-
     // Shows the CandidateWithDetails structure and needed modules
     candidate_details!();
     let results = cdb
@@ -326,7 +339,7 @@ pub struct CandidateReactionPayload {
     pub reaction_type: Reaction,
 }
 
-/// Adds an candidate reaction
+/// Adds a candidate reaction
 #[put("/<candidate_id>/reaction", format = "json", data = "<candidate_reaction>")]
 pub async fn add_reaction(
     candidate_id: Uuid,
@@ -359,4 +372,36 @@ pub async fn add_reaction(
         }
     })
     .await
+}
+
+
+/// gets a candidate reactions
+#[get("/<candidate_id>/reactions", format = "json", rank=1)]
+pub async fn get_reactions(
+    candidate_id: Uuid,
+    cdb: ChacaDB,
+) -> Result<Json<CandidateReactions>> {
+
+    let results = cdb
+        .run(move |connection| {
+            // Shows the CandidateReactions structure and needed modules
+            //TODO: mover los elementos de candidatereactions a esta macro: candidate_reactions!();
+            // Build the query with JOINs for all foreign keys
+            diesel::sql_query(
+                "SELECT
+                    $1 AS candidate_id,
+                    COUNT(CASE WHEN reaction_type = 'LIKE' THEN 1 ELSE NULL END) AS like_count,
+                    COUNT(CASE WHEN reaction_type = 'DISLIKE' THEN 1 ELSE NULL END) AS dislike_count,
+                    COUNT(CASE WHEN reaction_type = 'DANGER' THEN 1 ELSE NULL END) AS danger_count
+                FROM
+                    candidate_reactions
+                WHERE
+                    candidate_id = $1"
+            )
+            .bind::<SqlUuid, _>(candidate_id)
+            .get_result::<CandidateReactions>(connection)
+            .expect("Error loading candidate reactions")
+        })
+        .await;
+    Ok(Json(results))
 }
