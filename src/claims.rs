@@ -154,16 +154,14 @@ impl Claims {
             _ => AuthenticationError::Decoding(e.to_string()),
         })?;
 
-    Ok(token.claims)
-}
+        Ok(token.claims)
+    }
 
-
-
-/// Convert this Claims instance to a token string to be sent to the browser
-pub fn into_token(mut self, secret: &String) -> Result<String, Custom<String>> {
-    // the expiration of the token is: now + TOKEN_DURATION
-    let now = Utc::now();
-    // We store the time the token was issued
+    /// Convert this Claims instance to a token string to be sent to the browser
+    pub fn into_token(mut self, secret: &String) -> Result<String, Custom<String>> {
+        // the expiration of the token is: now + TOKEN_DURATION
+        let now = Utc::now();
+        // We store the time the token was issued
         self.iat = now.timestamp() as usize;
         let expiration = now
             .checked_add_signed(*TOKEN_DURATION)
@@ -209,6 +207,20 @@ pub fn into_token(mut self, secret: &String) -> Result<String, Custom<String>> {
 
         Ok(token)
     }
+
+    // Check if the auth token is valid
+    pub fn is_logged(cookie: Option<&Cookie>, secret: &String) -> bool {
+        // Check if we have a cookie
+        match cookie {
+            Some(t) =>  match Claims::from_cookie(&t, &secret) {
+                Ok(c) => return true,
+                Err(e) => return false,
+            },
+            None => false
+        };
+        false
+    }
+
 
 }
 
