@@ -7,10 +7,10 @@ use diesel::serialize::{IsNull,Output,ToSql};
 use std::io::Write;
 use serde::{Serialize, Deserialize};
 use std::fmt::{Display, Formatter, Result};
-
+use diesel::QueryId;
 
 // Enum for types of reactions
-#[derive(Debug, Clone, Copy, SqlType)]
+#[derive(Debug, Clone, Copy, SqlType, QueryId)]
 #[diesel(postgres_type(name = "reaction", schema = "public"))]
 #[diesel(sql_type = Reaction)]
 pub struct ReactionType;
