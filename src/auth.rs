@@ -194,15 +194,23 @@ async fn get_facebook_user_data(access_token: &str, client: &Client) -> Result<F
 /// Check if user is logged by checking the JWT token
 /// Returns AppUser to the frontend
 #[get("/auth/logged")]
-pub fn logged(
+pub async fn logged(
     state: &State<AppState>,
-    cookies: &CookieJar<'_>
+    cookies: &CookieJar<'_>,
+    cdb: ChacaDB,
 ) -> Result<Json<AppUser>, Status> {
+
     match cookies.get("auth_token") {
         Some(t) =>  match Claims::from_cookie(t, &state.jwt_secret) {
             Ok(c) => {
+                let user = match User::load_by_oauth(c.id.clone(), &cdb)
+                    .await {
+                    Ok(u) => u,
+                    Err(e) => return Err(Status::NotFound),
+                };
                 Ok(Json(AppUser {
-                    id: c.id,
+                    id: user.id,
+                    oauth_id: c.id,
                     name: c.name,
                     email: c.email,
                 }))
