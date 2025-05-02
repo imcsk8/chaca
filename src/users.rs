@@ -10,21 +10,13 @@ use rocket_dyn_templates::{context, Template};
 use rocket_sync_db_pools::diesel;
 use rocket::response::status::{BadRequest, NotFound};
 use crate::db::*;
-use crate::claims::Claims;
+use crate::claims::{AppUser, Claims};
 use crate::models::User;
 use crate::schema::users::dsl::*;
 use diesel::result::Error;
 //use std::error::Error;
 
 type Result<T, E = Debug<diesel::result::Error>> = std::result::Result<T, E>;
-
-/// Authenticated user for the frontend
-#[derive(Debug, Serialize, Deserialize)]
-struct AppUser {
-    id: String,
-    name: String,
-    email: Option<String>,
-}
 
 /// Creates a user
 #[post("/add", format = "json", data = "<arg_user>")]
