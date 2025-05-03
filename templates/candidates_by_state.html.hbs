@@ -100,32 +100,28 @@
                         <span onClick="window.open('/candidates/{{this.id}}', '_blank')"  class="font-weight-bold">{{this.fullname}}</span>
                         <br>
 
+                        <!-- Reaction buttons -->
+                        <div class="mt-2">
+                          <div class="reaction-group">
+                            <!-- Like Button -->
+                            <button class="btn btn-sm btn-outline-success reaction-btn" data-candidate-id="{{this.id}}" data-reaction-type="Like">
+                              <i class="fa fa-thumbs-up"></i>
+                            </button>
+                            <span class="reaction-count" id="like-count-{{this.id}}">{{ this.like_count }}</span>
 
-                      <!-- Reaction buttons -->
-                      <div class="mt-2">
-                        <div class="reaction-group">
-                          <!-- Like Button -->
-                          <button class="btn btn-sm btn-outline-success reaction-btn" data-candidate-id="{{this.id}}" data-reaction-type="Like">
-                            <i class="fa fa-thumbs-up"></i>
-                          </button>
-                          <span class="reaction-count" id="like-count-{{this.id}}">0</span>
-                          
-                          <!-- Dislike Button -->
-                          <button class="btn btn-sm btn-outline-secondary reaction-btn" data-candidate-id="{{this.id}}" data-reaction-type="Dislike">
-                            <i class="fa fa-thumbs-down"></i>
-                          </button>
-                          <span class="reaction-count" id="dislike-count-{{this.id}}">0</span>
-                          
-                          <!-- Danger Button -->
-                          <button class="btn btn-sm btn-outline-danger reaction-btn" data-candidate-id="{{this.id}}" data-reaction-type="Danger">
-                            <i class="fa fa-exclamation-triangle"></i>
-                          </button>
-                          <span class="reaction-count" id="danger-count-{{this.id}}">0</span>
+                            <!-- Dislike Button -->
+                            <button class="btn btn-sm btn-outline-secondary reaction-btn" data-candidate-id="{{this.id}}" data-reaction-type="Dislike">
+                              <i class="fa fa-thumbs-down"></i>
+                            </button>
+                            <span class="reaction-count" id="dislike-count-{{this.id}}">{{ this.dislike_count }}</span>
+
+                            <!-- Danger Button -->
+                            <button class="btn btn-sm btn-outline-danger reaction-btn" data-candidate-id="{{this.id}}" data-reaction-type="Danger">
+                              <i class="fa fa-exclamation-triangle"></i>
+                            </button>
+                            <span class="reaction-count" id="danger-count-{{this.id}}">{{ this.danger_count }}</span>
+                          </div>
                         </div>
-                      </div>
-
-
-
 
 
                         <small>Edad: {{this.age}}&nbsp;</small>
