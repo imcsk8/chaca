@@ -10,13 +10,13 @@ CREATE TABLE IF NOT EXISTS candidate_reactions (
     UNIQUE (candidate_id, user_id, reaction_type)
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_candidate ON candidate_reactions
+CREATE INDEX IF NOT EXISTS idx_candidate ON candidate_reactions
 USING btree
 (
     candidate_id
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_candidate_reactions_user ON candidate_reactions
+CREATE INDEX IF NOT EXISTS idx_candidate_reactions_user ON candidate_reactions
 USING btree
 (
     user_id
