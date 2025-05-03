@@ -71,6 +71,12 @@ macro_rules! candidate_details {
                 poder_name: String,
                 #[diesel(sql_type = Nullable<Text>)]
                 matter_name: Option<String>,
+                #[diesel(sql_type = BigInt)]
+                like_count: i64,
+                #[diesel(sql_type = BigInt)]
+                dislike_count: i64,
+                #[diesel(sql_type = BigInt)]
+                danger_count: i64,
             }
     };
 }
@@ -91,13 +97,27 @@ macro_rules! position_query {
             s.name as state_name,
             d.name as district_name,
             po.name as poder_name,
-            m.name as matter_name
+            m.name as matter_name,
+            reactions.like_count as like_count,
+            reactions.dislike_count as dislike_count,
+            reactions.danger_count as danger_count
         FROM candidate c
         JOIN cat_state s ON c.state = s.id_inegi
         JOIN cat_positions p ON c.position = p.id
         LEFT JOIN cat_district d ON c.district = d.id
         JOIN cat_poder po ON c.poder = po.uuid
         LEFT JOIN cat_matter m ON c.matter = m.uuid
+        LEFT JOIN LATERAL (
+            SELECT
+                COUNT(CASE WHEN reaction_type = 'LIKE' THEN 1 ELSE NULL END) AS like_count,
+                COUNT(CASE WHEN reaction_type = 'DISLIKE' THEN 1 ELSE NULL END) AS dislike_count,
+                COUNT(CASE WHEN reaction_type = 'DANGER' THEN 1 ELSE NULL END) AS danger_count
+            FROM
+                candidate_reactions
+            WHERE
+                candidate_id = c.id
+        ) AS reactions ON true
+
         WHERE c.state = $1 AND c.position={}
         ORDER BY c.fullname", $position)
     };
