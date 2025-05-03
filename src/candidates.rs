@@ -19,6 +19,7 @@ use serde_json::json;
 use rocket::serde::{Deserialize, Serialize};
 use diesel::sql_types::{BigInt, Uuid as SqlUuid};
 use diesel::QueryableByName;
+// TODO: check diesel version use diesel::dsl::DuplicatedKeys;
 //use uuid::{parse_str};
 
 type Result<T, E = Debug<diesel::result::Error>> = std::result::Result<T, E>;
@@ -366,9 +367,9 @@ pub struct CandidateReactionPayload {
 }
 
 /// Adds a candidate reaction
-#[put("/<candidate_id>/reaction", format = "json", data = "<candidate_reaction>")]
+#[put("/<candidate_id_req>/reaction", format = "json", data = "<candidate_reaction>")]
 pub async fn add_reaction(
-    candidate_id: Uuid,
+    candidate_id_req: Uuid,
     user: Claims,
     cdb: ChacaDB,
     candidate_reaction: Json<CandidateReactionPayload>
@@ -376,25 +377,28 @@ pub async fn add_reaction(
 
     let input_reaction = candidate_reaction.into_inner();
     let reaction_type_val = Reaction::from(input_reaction.reaction_type);
+    // For upsert
+    let ID_CONSTRAINT: &str = "candidate_reactions_candidate_id_user_id_reaction_type_key";
 
     cdb.run(move |conn| {
-        match diesel::insert_into(crate::schema::candidate_reactions::dsl::candidate_reactions)
+        use crate::schema::candidate_reactions::dsl::*;
+        match diesel::insert_into(candidate_reactions)
             .values((
-                crate::schema::candidate_reactions::candidate_id.eq(&candidate_id),
-                crate::schema::candidate_reactions::user_id.eq(input_reaction.user_id),
-                crate::schema::candidate_reactions::reaction_type.eq(reaction_type_val)
+                candidate_id.eq(&candidate_id_req),
+                user_id.eq(input_reaction.user_id),
+                reaction_type.eq(reaction_type_val)
             ))
-            .get_result::<CandidateReaction>(conn) {
+            //.on_conflict(diesel::upsert::on_constraint(ID_CONSTRAINT))
+            .on_conflict((user_id, candidate_id))
+            .do_update()
+            .set(reaction_type.eq(reaction_type_val))
+            .execute(conn) {
             Ok(_) => Ok(Custom(Status::Created, format!("Reaction Added"))),
-            Err(_) => {
-                // If the user already reacted remove the reaction
-                use crate::schema::candidate_reactions::dsl::*;
-                    diesel::delete(candidate_reactions)
-                        .filter(user_id.eq(&user_id))
-                        .filter(candidate_id.eq(&candidate_id))
-                        .filter(reaction_type.eq(&reaction_type_val))
-                        .execute(conn).ok(); // TODO: don't ignore errors
-                Ok(Custom(Status::Accepted, format!("Reaction Removed")))
+            Err(e) => {
+                // If the user already reacted remove any reaction and
+                use log::info;
+                info!("Error this should not happen {}", e);
+                Ok(Custom(Status::Accepted, format!("Error upserting...")))
             },
         }
     })
@@ -432,7 +436,6 @@ pub async fn get_reactions(
         .await;
     Ok(Json(results))
 }
-
 
 
 /// Removes a candidate reaction
