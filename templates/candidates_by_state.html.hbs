@@ -1,6 +1,18 @@
 <!doctype html>
 <html lang="en">
   <head>
+
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JB6DXVVXBD"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-JB6DXVVXBD');
+    </script>
+
     <title>Listado de Candidatos para {{candidates.0.state_name}}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -206,7 +218,7 @@
 
 
     <script>
-      // Glbal variables
+      // Golbal variables
       const LOGIN_PATH = "/login/facebook";
       var CURRENT_USER = {};
       // Register Handlebars helper for equality check
@@ -217,19 +229,6 @@
       $(document).ready(function() {
         // Checks every 30 minutes
         setupLoginCheck(30);
-
-/* TODO sacar esto directo en el template
-        function loadAllReactions() {
-          // Get all candidate IDs from the table
-          const candidateRows = $('#candidatesTable tbody tr');
-          
-          candidateRows.each(function() {
-            const candidateId = $(this).data('id');
-            loadCandidateReactions(candidateId);
-          });
-        }
-        
- */       
 
         // Handle reaction button clicks
         $(document).on('click', '.reaction-btn', function() {
