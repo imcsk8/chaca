@@ -1,6 +1,18 @@
 <!doctype html>
 <html lang="en">
   <head>
+
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JB6DXVVXBD"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-JB6DXVVXBD');
+    </script>
+
     <title>Perfil de Candidato</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -9,11 +21,11 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/public/css/style.css">
-	{{> fb_headers }}
+    {{> fb_headers }}
   </head>
   <body>
 
-	{{> navbar }}
+    {{> navbar }}
 
     <section class="ftco-section">
       <div class="container">
@@ -171,11 +183,73 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+    <script src="/js/app.js"></script>
     
+    <style>
+      .reaction-group {
+        display: flex;
+        align-items: center;
+      }
+
+      .reaction-count {
+        margin-right: 10px;
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      .reaction-btn {
+        margin-right: 3px;
+      }
+    </style>
+
     <script>
+      // Register Handlebars helper for equality check
+      const LOGIN_PATH = "/login/facebook";
+      var CURRENT_USER = {};
       // Register Handlebars helper for equality check
       Handlebars.registerHelper('eq', function(a, b) {
         return a === b;
+      });
+
+      $(document).ready(function() {
+        // Checks every 30 minutes
+        setupLoginCheck(30);
+
+        // Handle reaction button clicks
+        $(document).on('click', '.reaction-btn', function() {
+            const candidateId = $(this).data('candidate-id');
+            const reactionType = $(this).data('reaction-type');
+
+            // Check if the user is logged in
+            if ( isEmpty(CURRENT_USER) ) {
+                alert("Debes acceder antes de poder comentar o poner una reacción");
+                return;
+            }
+
+            // Build payload
+            var reaction_payload = {
+                user_id: CURRENT_USER.id,
+                candidate_id: candidateId,
+                oauth_user_id: CURRENT_USER.oauth_id,
+                reaction_type: reactionType,
+            };
+
+            // Send reaction to server
+            $.ajax({
+                url: `/candidates/${candidateId}/reaction`,
+                method: 'PUT',
+                data: JSON.stringify(reaction_payload),
+                contentType: 'application/json',
+                success: function() {
+                    // Reload reactions for this candidate to update counts
+                    console.log("Load reactions...");
+                    loadCandidateReactions(candidateId);
+                },
+                error: function(err) {
+                    console.error('Error sending reaction', err);
+                }
+            });
+        });
       });
     </script>
   </body>
