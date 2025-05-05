@@ -194,3 +194,19 @@ macro_rules! list_by_state_query {
     };
 }
 
+
+/// Macro for reaction list
+#[macro_export]
+macro_rules! candidate_reactions_query {
+    () => {
+        String::from("SELECT
+                $1 AS candidate_id,
+                COUNT(CASE WHEN reaction_type = 'LIKE' THEN 1 ELSE NULL END) AS like_count,
+                COUNT(CASE WHEN reaction_type = 'DISLIKE' THEN 1 ELSE NULL END) AS dislike_count,
+                COUNT(CASE WHEN reaction_type = 'DANGER' THEN 1 ELSE NULL END) AS danger_count
+            FROM
+                candidate_reactions
+            WHERE
+                candidate_id = $1")
+    };
+}
