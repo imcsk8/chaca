@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+  <head>
+
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JB6DXVVXBD"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-JB6DXVVXBD');
+    </script>
+
+    <title>Listado de Candidatos para {{candidates.0.state_name}}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/public/css/style.css">
+    {{> fb_headers }}
+  </head>
+  <body>
+
+    {{> navbar }}
+
+    <section class="ftco-section">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-md-8 text-center mb-4">
+            <h2 class="heading-section">Todal de Candidatos</h2>
+            <p>Total: {{count}} candidatos</p>
+          </div>
+        </div>
+        
+        <!-- New menu with requested options -->
+        <div class="row justify-content-center">
+          <div class="col-md-8 mb-4">
+            <div class="position-filter-menu">
+              <ul class="nav nav-pills nav-justified menu-list">
+                <li class="nav-item menu-item btn btn-primary">
+                  <a class="nav-link active btn btn-primary" href="/candidates/judges/{{ candidates.0.state }}" data-filter="jueces">Jueces <br />de<br />Primera Instancia</a>
+                </li>
+                <li class="nav-item menu-item btn btn-primary">
+                  <a class="nav-link active btn btn-primary" href="/candidates/mtsj/{{ candidates.0.state }}" data-filter="magistrados-tsj">Magistrados Tribunal Superior de Justicia</a>
+                </li>
+                <li class="nav-item menu-item btn btn-primary">
+                  <a class="nav-link active btn btn-primary" href="/candidates/mtdj/{{ candidates.0.state }}" data-filter="magistrados-dj">Magistrados Tribunal de Disciplina Judicial</a>
+                </li>
+                <li class="nav-item menu-item btn btn-primary">
+                  <a class="nav-link active btn btn-primary" style="text-align: center; padding-top: 25%" href="/candidates/{{ candidates.0.state }}" data-filter="todos">Todos</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="row justify-content-center">
+          <div class="col-md-8 mb-4">
+            <div class="search-box">
+              <div class="input-group">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar candidatos...">
+                <div class="input-group-append">
+                  <button class="btn btn-primary" id="searchButton">
+                    <i class="fa fa-search"></i> Buscar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-12">
+            <div class="table-wrap">
+              <table class="table table-responsive-xl" id="candidatesTable">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Cargo</th>
+                    <th>Distrito</th>
+                    <th>Poder</th>
+                    <th>Contacto</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {{#each candidates}}
+                  <tr class="candidate-row" data-fullname="{{this.fullname}}" data-position="{{this.position_name}}" data-state="{{this.state_name}}">
+                    <td class="d-flex align-items-center" style="cursor: pointer">
+                      {{#if this.image_url}}
+                      <div class="avatar-content" onClick="window.open('/candidates/{{this.id}}', '_blank')" >
+                        <center>
+                            <img class="avatar-img" loading="lazy" src="{{this.image_url}}" />
+                            <br />
+                            <span class="badge bg-primary" style="font-size: 10px; width: auto">
+                                Ver Perfil
+                            </span>
+                         </center>
+                         <br />
+                      </div>
+                      {{else}}
+                      <div class="avatar-content" onClick="window.open('/candidates/{{this.id}}', '_blank')" >
+                        <img class="avatar-img" loading="lazy" src="/api/placeholder/50/50" />
+                      </div>
+                      {{/if}}
+                      <div class="pl-3">
+                        <span onClick="window.open('/candidates/{{this.id}}', '_blank')"  class="font-weight-bold">{{this.fullname}}</span>
+                        <br>
+
+                        <!-- Reaction buttons -->
+                        <div class="mt-2">
+                          <div class="reaction-group">
+                            <!-- Like Button -->
+                            <button class="btn btn-sm btn-outline-success reaction-btn" data-candidate-id="{{this.id}}" data-reaction-type="Like">
+                              <i class="fa fa-thumbs-up"></i>
+                            </button>
+                            <span class="reaction-count" id="like-count-{{this.id}}">{{ this.like_count }}</span>
+
+                            <!-- Dislike Button -->
+                            <button class="btn btn-sm btn-outline-secondary reaction-btn" data-candidate-id="{{this.id}}" data-reaction-type="Dislike">
+                              <i class="fa fa-thumbs-down"></i>
+                            </button>
+                            <span class="reaction-count" id="dislike-count-{{this.id}}">{{ this.dislike_count }}</span>
+
+                            <!-- Danger Button -->
+                            <button class="btn btn-sm btn-outline-danger reaction-btn" data-candidate-id="{{this.id}}" data-reaction-type="Danger">
+                              <i class="fa fa-exclamation-triangle"></i>
+                            </button>
+                            <span class="reaction-count" id="danger-count-{{this.id}}">{{ this.danger_count }}</span>
+                          </div>
+                        </div>
+
+
+                        <small>Edad: {{this.age}}&nbsp;</small>
+                        {{#if (eq this.sex "Hombre")}}
+                        <span class="badge badge-info">H</span>
+                        {{else}}
+                        <span class="badge badge-info">M</span>
+                        {{/if}}
+                      </div>
+                    </td>
+                    <td>
+                        {{this.position_name}}
+                    </td>
+                    <td>{{#if this.district_name}}{{this.district_name}}{{else}}N/A{{/if}}</td>
+                    <td>{{this.poder_name}}</td>
+                    <td>
+                      {{#if this.email}}
+                      <a href="mailto:{{this.email}}"><i class="fa fa-envelope"></i> {{this.email}}</a><br>
+                      {{/if}}
+                      {{#if this.telephone}}
+                      <a href="tel:{{this.telephone}}"><i class="fa fa-phone"></i> {{this.telephone}}</a>
+                      {{/if}}
+                    </td>
+                    <td>
+                      <div class="btn-group" role="group">
+                        <a href="/candidates/{{this.id}}" class="btn btn-sm btn-primary">
+                          <i class="fa fa-eye"></i>
+                        </a>
+                        {{#if this.curriculum_url}}
+                        <a href="{{this.curriculum_url}}" target="_blank" class="btn btn-sm btn-info">
+                          <i class="fa fa-file-text-o"></i>
+                        </a>
+                        {{/if}}
+                        {{#if this.website}}
+                        <a href="{{this.website}}" target="_blank" class="btn btn-sm btn-success">
+                          <i class="fa fa-globe"></i>
+                        </a>
+                        {{/if}}
+                      </div>
+                    </td>
+                  </tr>
+                  {{/each}}
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Pagination -->
+            <nav aria-label="Candidates pagination">
+              <ul class="pagination" id="pagination">
+                <!-- Pagination will be populated by JavaScript -->
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+    <script src="/js/app.js"></script>
+        
+    <style>
+      .reaction-group {
+        display: flex;
+        align-items: center;
+      }
+      
+      .reaction-count {
+        margin-right: 10px;
+        font-size: 12px;
+        font-weight: bold;
+      }
+      
+      .reaction-btn {
+        margin-right: 3px;
+      }
+    </style>
+
+
+
+    <script>
+      // Golbal variables
+      const LOGIN_PATH = "/login/facebook";
+      var CURRENT_USER = {};
+      // Register Handlebars helper for equality check
+      Handlebars.registerHelper('eq', function(a, b) {
+        return a === b;
+      });
+      
+      $(document).ready(function() {
+        // Checks every 30 minutes
+        setupLoginCheck(30);
+
+        // Handle reaction button clicks
+        $(document).on('click', '.reaction-btn', function() {
+            const candidateId = $(this).data('candidate-id');
+            const reactionType = $(this).data('reaction-type');
+          
+            // Check if the user is logged in
+            if ( isEmpty(CURRENT_USER) ) {
+                alert("Debes acceder antes de poder comentar o poner una reacción");
+                return;
+            }
+
+            // Build payload
+            var reaction_payload = {
+                user_id: CURRENT_USER.id,
+                candidate_id: candidateId,
+                oauth_user_id: CURRENT_USER.oauth_id,
+                reaction_type: reactionType,
+            };
+
+            // Send reaction to server
+            $.ajax({
+                url: `/candidates/${candidateId}/reaction`,
+                method: 'PUT',
+                data: JSON.stringify(reaction_payload),
+                contentType: 'application/json',
+                success: function() {
+                    // Reload reactions for this candidate to update counts
+                    console.log("Load reactions...");
+                    loadCandidateReactions(candidateId);
+                },
+                error: function(err) {
+                    console.error('Error sending reaction', err);
+                }
+            });
+        });
+
+
+
+        // Pagination configuration
+        const rowsPerPage = 50;
+        const rows = $('#candidatesTable tbody tr');
+        const rowsCount = rows.length;
+        const pagesCount = Math.ceil(rowsCount / rowsPerPage);
+        let currentPage = 1;
+        
+        // Function to display the appropriate rows for the current page
+        function displayRows() {
+          rows.hide();
+          const start = (currentPage - 1) * rowsPerPage;
+          const end = start + rowsPerPage;
+          
+          // Only show visible rows based on both pagination and search
+          const visibleRows = rows.filter(':not(.filtered)');
+          visibleRows.slice(start, end).show();
+          
+          // Update pagination UI
+          updatePagination();
+        }
+        
+        // Function to update pagination controls
+        function updatePagination() {
+          const visibleRows = rows.filter(':not(.filtered)').length;
+          const filteredPagesCount = Math.ceil(visibleRows / rowsPerPage);
+          
+          const pagination = $('#pagination');
+          pagination.empty();
+          
+          // Previous button
+          pagination.append(`
+            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+              <a class="page-link" href="#" data-page="${currentPage - 1}">Previous</a>
+            </li>
+          `);
+          
+          // Page numbers
+          for (let i = 1; i <= filteredPagesCount; i++) {
+            pagination.append(`
+              <li class="page-item ${currentPage === i ? 'active' : ''}">
+                <a class="page-link" href="#" data-page="${i}">${i}</a>
+              </li>
+            `);
+          }
+          
+          // Next button
+          pagination.append(`
+            <li class="page-item ${currentPage === filteredPagesCount ? 'disabled' : ''}">
+              <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
+            </li>
+          `);
+          
+          // Add click event for pagination links
+          $('.page-link').click(function(e) {
+            e.preventDefault();
+            const page = parseInt($(this).data('page'));
+            
+            // Only navigate if it's a valid page
+            if (page >= 1 && page <= filteredPagesCount && page !== currentPage) {
+              currentPage = page;
+              displayRows();
+            }
+          });
+        }
+        
+        // Search functionality
+        function performSearch() {
+          const searchTerm = $('#searchInput').val().toLowerCase();
+          
+          // If search term is empty, show all rows
+          if (searchTerm === '') {
+            rows.removeClass('filtered');
+          } else {
+            // Loop through all rows and check if they match the search
+            rows.each(function() {
+              const $row = $(this);
+              const fullname = $row.data('fullname').toLowerCase();
+              const position = $row.data('position').toLowerCase();
+              const state = $row.data('state').toLowerCase();
+              
+              // Check if any of the data contains the search term
+              if (fullname.includes(searchTerm) || 
+                  position.includes(searchTerm) || 
+                  state.includes(searchTerm)) {
+                $row.removeClass('filtered');
+              } else {
+                $row.addClass('filtered');
+              }
+            });
+          }
+          
+          // Reset to first page and display appropriate rows
+          currentPage = 1;
+          displayRows();
+        }
+        
+        // Initial setup
+        displayRows();
+        
+        // Search button click handler
+        $('#searchButton').click(function() {
+          performSearch();
+        });
+        
+        // Search input keyup handler (search as you type)
+        $('#searchInput').on('keyup', function(e) {
+          // Search on Enter key
+          //if (e.keyCode === 13) {
+            performSearch();
+          //}
+        });
+      });
+
+
+
+
+    </script>
+  </body>
+</html>
