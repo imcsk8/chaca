@@ -265,6 +265,21 @@ USING btree
 );
 -- ddl-end --
 
+
+CREATE INDEX IF NOT EXISTS idx_candidate_state ON Candidate
+USING btree
+(
+    state
+);
+
+CREATE INDEX IF NOT EXISTS idx_candidate_position ON Candidate
+USING btree
+(
+    position
+);
+
+
+
 -- CSV: REDES SOCIALES DE CONTACTO PÚBLICOS
 -- JSON: mediosDeContacto.redesSociales
 CREATE TABLE IF NOT EXISTS candidate_social_media (
