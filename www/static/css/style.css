@@ -87,6 +87,7 @@ body {
 .pagination {
   justify-content: center;
   margin-top: 30px;
+  flex-wrap: wrap;
 }
 
 .menu-item {
@@ -192,7 +193,7 @@ body {
 }
 
 .submenu-item {
-	margin-left: 5px;
+    margin-left: 5px;
     border-radius: 10px;
 }
 
@@ -1694,7 +1695,26 @@ pre {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch; }
     .table-responsive-sm > .table-bordered {
-      border: 0; } }
+      border: 0; }
+
+    .pagination {
+      gap: 2px;
+    }
+
+    .pagination .page-item {
+      margin-bottom: 5px;
+    }
+
+    .pagination .page-link {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    /* If there are many pages, show fewer page numbers on mobile */
+    .pagination .page-item:not(.active):not(:first-child):not(:last-child):nth-child(n+7):nth-last-child(n+7) {
+       display: none;
+    }
+}
 
 @media (max-width: 767.98px) {
   .table-responsive-md {
