@@ -1,5 +1,11 @@
 use crate::claims::Claims;
-use chaca_macros::{candidate_details, position_query, all_candidates, list_by_state_query};
+use chaca_macros::{
+    candidate_details,
+    position_query,
+    all_candidates,
+    list_by_state_query,
+    candidate_reactions_query,
+};
 use crate::db::*;
 use crate::types::{Positions, Reaction};
 use crate::models::{Candidate, CandidateReaction};
@@ -55,24 +61,6 @@ pub async fn add(arg_candidate: Json<Candidate>, user: Claims, cdb: ChacaDB) -> 
     Ok(Created::new("/").body(Json(ret_id)))
 }
 
-//https://api.rocket.rs/v0.5/rocket_sync_db_pools/
-
-/// Show the list of candidate in HTML
-/*
-#[get("/")]
-pub async fn list(cdb: ChacaDB) -> Template {
-    let results = cdb
-        .run(move |connection| {
-            crate::schema::candidate::dsl::candidate
-                .load::<Candidate>(connection)
-                .expect("Error loading candidate")
-        })
-        .await;
-    println!("RESULT? {:?}", results);
-    Template::render("candidates", context! {candidates: &results, count: results.len()})
-}
-*/
-
 
 /*******************************************************************************
 *                                                                              *
@@ -126,7 +114,8 @@ pub async fn list_by_state(state_id: i32, cdb: ChacaDB) -> Template {
     Template::render("candidates_by_state", context! {
         candidates: &results,
         main: "true",
-        count: results.len()
+        count: results.len(),
+        all: "true",
     })
 }
 
@@ -259,7 +248,8 @@ pub async fn judges_by_state(state_id: i32, cdb: ChacaDB) -> Template {
 
     Template::render("candidates_by_state", context! {
         candidates: &results,
-        count: results.len()
+        count: results.len(),
+        judges: "true",
     })
 }
 
@@ -281,7 +271,8 @@ pub async fn mtsj_by_state(state_id: i32, cdb: ChacaDB) -> Template {
 
     Template::render("candidates_by_state", context! {
         candidates: &results,
-        count: results.len()
+        count: results.len(),
+        mtsj: "true",
     })
 }
 
@@ -303,7 +294,8 @@ pub async fn mtdj_by_state(state_id: i32, cdb: ChacaDB) -> Template {
 
     Template::render("candidates_by_state", context! {
         candidates: &results,
-        count: results.len()
+        count: results.len(),
+        mtdj: "true",
     })
 }
 
@@ -378,15 +370,7 @@ pub async fn get_reactions(
             //TODO: mover los elementos de candidatereactions a esta macro: candidate_reactions!();
             // Build the query with JOINs for all foreign keys
             diesel::sql_query(
-                "SELECT
-                    $1 AS candidate_id,
-                    COUNT(CASE WHEN reaction_type = 'LIKE' THEN 1 ELSE NULL END) AS like_count,
-                    COUNT(CASE WHEN reaction_type = 'DISLIKE' THEN 1 ELSE NULL END) AS dislike_count,
-                    COUNT(CASE WHEN reaction_type = 'DANGER' THEN 1 ELSE NULL END) AS danger_count
-                FROM
-                    candidate_reactions
-                WHERE
-                    candidate_id = $1"
+                candidate_reactions_query!()
             )
             .bind::<SqlUuid, _>(candidate_id)
             .get_result::<CandidateReactions>(connection)
