@@ -39,7 +39,7 @@ Delegate=yes
 Type=notify
 NotifyAccess=all
 SyslogIdentifier=%N
-ExecStart=/usr/bin/podman run --name systemd-%N --cidfile=%t/%U/%N.cid --replace --rm --cgroups=split --network host --sdnotify=conmon -d -v /etc/elector:/config:z --publish 8001:8001 --env-file /etc/elector/container.env ${ELECTOR_IMAGE}:${ELECTOR_VERSION}
+ExecStart=/usr/bin/podman run --tls-verify=false --name systemd-%N --cidfile=%t/%U/%N.cid --replace --rm --cgroups=split --network host --sdnotify=conmon -d -v /etc/elector:/config:z --publish 8001:8001 --env-file /etc/elector/container.env ${ELECTOR_IMAGE}:${ELECTOR_VERSION}
 
 [Install]
 WantedBy=default.target
