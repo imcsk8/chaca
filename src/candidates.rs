@@ -4,6 +4,7 @@ use chaca_macros::{
     position_query,
     all_candidates,
     list_by_state_query,
+    candidate_profile_query,
     candidate_reactions_query,
 };
 use crate::db::*;
@@ -148,37 +149,8 @@ pub async fn get_html(candidate_id: Uuid, cdb: ChacaDB) -> Result<Template, NotF
             candidate_details!();
             // Build the query with JOINs for all foreign keys
             diesel::sql_query(
-                "SELECT c.*,
-                    CASE
-                        WHEN c.sex = 'HOMBRE' THEN concat_ws(' ', p.male_name, p.long_name)
-                        WHEN c.sex = 'MUJER' THEN concat_ws(' ', p.female_name, p.long_name)
-                        ELSE concat_ws(' ', p.male_name, p.long_name) -- Default fallback
-                    END AS position_name,
-                    s.name as state_name,
-                    d.name as district_name,
-                    po.name as poder_name,
-                    m.name as matter_name,
-                    reactions.like_count as like_count,
-                    reactions.dislike_count as dislike_count,
-                    reactions.danger_count as danger_count
-                FROM candidate c
-                JOIN cat_state s ON c.state = s.id_inegi
-                JOIN cat_positions p ON c.position = p.id
-                LEFT JOIN cat_district d ON c.district = d.id
-                JOIN cat_poder po ON c.poder = po.uuid
-                LEFT JOIN cat_matter m ON c.matter = m.uuid
-                LEFT JOIN LATERAL (
-                    SELECT
-                        COUNT(CASE WHEN reaction_type = 'LIKE' THEN 1 ELSE NULL END) AS like_count,
-                        COUNT(CASE WHEN reaction_type = 'DISLIKE' THEN 1 ELSE NULL END) AS dislike_count,
-                        COUNT(CASE WHEN reaction_type = 'DANGER' THEN 1 ELSE NULL END) AS danger_count
-                    FROM
-                        candidate_reactions
-                    WHERE
-                        candidate_id = c.id
-                ) AS reactions ON true
-                WHERE c.id = $1
-                ORDER BY c.fullname")
+                candidate_profile_query!()
+            )
             .bind::<Uuid, _>(candidate_id)
             .load::<CandidateWithDetails>(connection)
             .expect("Error loading candidates with details")
