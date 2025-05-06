@@ -29,3 +29,10 @@ USING btree
     candidate_id
 );
 
+CREATE INDEX IF NOT EXISTS idx_candidate_reactions_type ON candidate_reactions
+USING btree
+(
+    reaction_type
+);
+
+
