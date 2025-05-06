@@ -54,7 +54,31 @@
                         </span>
                         <span class="badge badge-info">{{ candidate.age }} años</span>
                       </p>
-                      
+
+                        <!-- Reaction buttons -->
+                        <div class="mt-4 candidate-profile-reactions">
+                          <div class="reaction-group">
+                            <!-- Like Button -->
+                            <button class="btn btn-lg btn-outline-success reaction-btn" data-candidate-id="{{candidate.id}}" data-reaction-type="Like">
+                              <i class="fa fa-thumbs-up"></i>
+                            </button>
+                            <span class="reaction-count" id="like-count-{{candidate.id}}">{{ candidate.like_count }}</span>
+
+                            <!-- Dislike Button -->
+                            <button class="btn btn-lg btn-outline-secondary reaction-btn" data-candidate-id="{{candidate.id}}" data-reaction-type="Dislike">
+                              <i class="fa fa-thumbs-down"></i>
+                            </button>
+                            <span class="reaction-count" id="dislike-count-{{candidate.id}}">{{ candidate.dislike_count }}</span>
+
+                            <!-- Danger Button -->
+                            <button class="btn btn-lg btn-outline-danger reaction-btn" data-candidate-id="{{candidate.id}}" data-reaction-type="Danger">
+                              <i class="fa fa-exclamation-triangle"></i>
+                            </button>
+                            <span class="reaction-count" id="danger-count-{{candidate.id}}">{{ candidate.danger_count }}</span>
+                          </div>
+                        </div>
+
+
                       <div class="mt-3">
                         {{#if candidate.curriculum_url}}
                         <a href="{{ candidate.curriculum_url }}" target="_blank" class="btn btn-sm btn-info mb-2">
@@ -76,7 +100,7 @@
                       </div>
                     </div>
                   </div>
-                  
+
                   <div class="col-md-8">
                     <div class="card mb-3">
                       <div class="card-header bg-primary text-white">
@@ -115,7 +139,7 @@
                         </table>
                       </div>
                     </div>
-                    
+
                     <div class="card mb-3">
                       <div class="card-header bg-info text-white">
                         <h5 class="mb-0">Contacto</h5>
@@ -126,7 +150,7 @@
                         {{else}}
                         <p><i class="fa fa-envelope"></i> No disponible</p>
                         {{/if}}
-                        
+
                         {{#if candidate.telephone}}
                         <p><i class="fa fa-phone"></i> <a href="tel:{{ candidate.telephone }}">{{ candidate.telephone }}</a></p>
                         {{else}}
@@ -184,7 +208,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
     <script src="/js/app.js"></script>
-    
+
     <style>
       .reaction-group {
         display: flex;
