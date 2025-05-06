@@ -198,7 +198,7 @@ pub async fn get_html(candidate_id: Uuid, cdb: ChacaDB) -> Result<Template, NotF
 }
 
 /// Remove a candidate
-#[delete("/<candidateid>")]
+/*#[delete("/<candidateid>")]
 pub async fn delete(
     candidateid: Uuid,
     user: Claims,
@@ -216,7 +216,7 @@ pub async fn delete(
         Err(NotFound(format!("Could not find candidate: {}", candidateid)))
     }
 }
-
+*/
 
 
 /*******************************************************************************
