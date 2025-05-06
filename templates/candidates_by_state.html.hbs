@@ -36,27 +36,136 @@
           </div>
         </div>
         
-        <!-- New menu with requested options -->
+        <!-- Positions menu -->
+
+
         <div class="row justify-content-center">
-          <div class="col-md-8 mb-4">
-            <div class="position-filter-menu">
+          <div class="col-md-7 mb-2">
+            <!-- Main position filter menu -->
+            <div class="position-filter-menu compact mb-2">
               <ul class="nav nav-pills nav-justified menu-list">
-                <li class="nav-item menu-item btn btn-primary">
-                  <a class="nav-link active btn btn-primary" href="/candidates/judges/{{ candidates.0.state }}" data-filter="jueces">Jueces <br />de<br />Primera Instancia</a>
+
+              {{#if judges }}
+                <!-- Selected Option -->
+                <script>
+                    // Selected menu option
+                    var option = "judges";
+                </script>
+
+                <li id="button-jueces" class="nav-item menu-item menu-item-selected">
+                  <a class="nav-link active btn btn-xs btn-primary menu-item-selected" href="/candidates/judges/{{ candidates.0.state }}" data-filter="jueces">
+                    <span class="menu-title">Jueces</span>
+                  </a>
                 </li>
-                <li class="nav-item menu-item btn btn-primary">
-                  <a class="nav-link active btn btn-primary" href="/candidates/mtsj/{{ candidates.0.state }}" data-filter="magistrados-tsj">Magistrados Tribunal Superior de Justicia</a>
+              {{else}}
+                <li id="button-jueces" class="nav-item menu-item">
+                  <a class="nav-link active btn btn-xs btn-primary" href="/candidates/judges/{{ candidates.0.state }}" data-filter="jueces">
+                    <span class="menu-title">Jueces</span>
+                  </a>
                 </li>
-                <li class="nav-item menu-item btn btn-primary">
-                  <a class="nav-link active btn btn-primary" href="/candidates/mtdj/{{ candidates.0.state }}" data-filter="magistrados-dj">Magistrados Tribunal de Disciplina Judicial</a>
+              {{/if}}
+
+
+
+              {{#if mtsj }}
+                <!-- Selected Option -->
+                <script>
+                    // Selected menu option
+                    var option = "mtsj";
+                </script>
+
+                <li class="nav-item menu-item menu-item-selected">
+                  <a class="nav-link active btn btn-xs btn-primary menu-item-selected" href="/candidates/mtsj/{{ candidates.0.state }}" data-filter="magistrados-tsj">
+                    <span class="menu-title">Magistrados</span>
+                    <span class="menu-subtitle"><small>T. Superior</small></span>
+                    <!-- <span class="menu-subtitle">Tribunal Superior de Justicia</span> -->
+                  </a>
                 </li>
-                <li class="nav-item menu-item btn btn-primary">
-                  <a class="nav-link active btn btn-primary" style="text-align: center; padding-top: 25%" href="/candidates/{{ candidates.0.state }}" data-filter="todos">Todos</a>
+              {{else}}
+                <li class="nav-item menu-item">
+                  <a class="nav-link active btn btn-xs btn-primary" href="/candidates/mtsj/{{ candidates.0.state }}" data-filter="magistrados-tsj">
+                    <span class="menu-title">Magistrados</span>
+                    <span class="menu-subtitle"><small>T. Superior</small></span>
+                  </a>
+                </li>
+              {{/if}}
+
+
+              {{#if mtdj }}
+                <!-- Selected Option -->
+                <script>
+                    // Selected menu option
+                    var option = "mtdj";
+                </script>
+
+                <li class="nav-item menu-item menu-item-selected">
+                  <a class="nav-link active btn btn-xs btn-primary menu-item-selected" href="/candidates/mtdj/{{ candidates.0.state }}" data-filter="magistrados-dj">
+                    <span class="menu-title">Magistrados </span>
+                    <span class="menu-subtitle"><small>T. Disciplina</small></span>
+                  </a>
+                </li>
+              {{else}}
+                <li class="nav-item menu-item">
+                  <a class="nav-link active btn btn-xs btn-primary" href="/candidates/mtdj/{{ candidates.0.state }}" data-filter="magistrados-dj">
+                    <span class="menu-title">Magistrados </span>
+                    <span class="menu-subtitle"><small>T. Disciplina</small></span>
+                  </a>
+                </li>
+              {{/if}}
+
+
+              {{#if all }}
+                <!-- Selected Option -->
+                <script>
+                    // Selected menu option
+                    var option = "all";
+                </script>
+
+                <li class="nav-item menu-item menu-item-selected">
+                  <a class="nav-link active btn btn-xs btn-primary menu-item-selected" href="/candidates/{{ candidates.0.state }}" data-filter="todos">
+                    <span class="menu-title">Todos</span>
+                  </a>
+                </li>
+              </ul>
+
+              {{else}}
+                <li class="nav-item menu-item">
+                  <a class="nav-link active btn btn-xs btn-primary" href="/candidates/{{ candidates.0.state }}" data-filter="todos">
+                    <span class="menu-title">Todos</span>
+                  </a>
+                </li>
+              </ul>
+              {{/if}}
+
+            </div>
+
+            <!-- Category submenu -->
+            <div class="category-submenu">
+              <ul class="nav nav-pills nav-justified submenu-list">
+                <li class="nav-item submenu-item">
+                  <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="civil">CIVIL</a>
+                </li>
+                <li class="nav-item submenu-item">
+                  <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="familiar">FAMILIAR</a>
+                </li>
+                <li class="nav-item submenu-item">
+                  <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="laboral">LABORAL</a>
+                </li>
+                <li class="nav-item submenu-item">
+                  <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="menor">MENOR</a>
+                </li>
+                <li class="nav-item submenu-item">
+                  <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="mixta">MIXTO</a>
+                </li>
+                <li class="nav-item submenu-item">
+                  <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="penal">PENAL</a>
                 </li>
               </ul>
             </div>
           </div>
         </div>
+
+
 
 
         <div class="row justify-content-center">
