@@ -63,6 +63,10 @@ body {
   Custom styles
 */
 
+.candidate-profile-reactions {
+    padding-left: 10%;
+}
+
 .avatar-img {
   width: auto;
   height: auto;
