@@ -78,7 +78,6 @@
                   <a class="nav-link active btn btn-xs btn-primary menu-item-selected" href="/candidates/mtsj/{{ candidates.0.state }}" data-filter="magistrados-tsj">
                     <span class="menu-title">Magistrados</span>
                     <span class="menu-subtitle"><small>T. Superior</small></span>
-                    <!-- <span class="menu-subtitle">Tribunal Superior de Justicia</span> -->
                   </a>
                 </li>
               {{else}}
@@ -144,22 +143,22 @@
             <!-- Judges Category submenu -->
             <div class="category-submenu">
               <ul class="nav nav-pills nav-justified submenu-list">
-                <li class="nav-item submenu-item">
+                <li class="nav-item submenu-item" data-matter="CIVIL">
                   <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="civil">CIVIL</a>
                 </li>
-                <li class="nav-item submenu-item">
+                <li class="nav-item submenu-item" data-matter="FAMILIAR">
                   <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="familiar">FAMILIAR</a>
                 </li>
-                <li class="nav-item submenu-item">
+                <li class="nav-item submenu-item" data-matter="LABORAL">
                   <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="laboral">LABORAL</a>
                 </li>
-                <li class="nav-item submenu-item">
+                <li class="nav-item submenu-item" data-matter="MENOR">
                   <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="menor">MENOR</a>
                 </li>
-                <li class="nav-item submenu-item">
+                <li class="nav-item submenu-item" data-matter="MIXTA">
                   <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="mixta">MIXTO</a>
                 </li>
-                <li class="nav-item submenu-item">
+                <li class="nav-item submenu-item" data-matter="PENAL">
                   <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="penal">PENAL</a>
                 </li>
               </ul>
@@ -170,13 +169,13 @@
             <!-- mtsj Category submenu -->
             <div class="category-submenu">
               <ul class="nav nav-pills nav-justified submenu-list">
-                <li class="nav-item submenu-item">
+                <li class="nav-item submenu-item" data-matter="CIVIL">
                   <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="civil">CIVIL</a>
                 </li>
-                <li class="nav-item submenu-item">
+                <li class="nav-item submenu-item" data-matter="FAMILIAR">
                   <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="familiar">FAMILIAR</a>
                 </li>
-                <li class="nav-item submenu-item">
+                <li class="nav-item submenu-item" data-matter="PENAL">
                   <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="penal">PENAL</a>
                 </li>
               </ul>
@@ -211,15 +210,20 @@
                   <tr>
                     <th>Nombre</th>
                     <th>Cargo</th>
+                    <th>Materia</th>
                     <th>Distrito</th>
                     <th>Poder</th>
-                    <th>Contacto</th>
                     <th>Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
                   {{#each candidates}}
-                  <tr class="candidate-row" data-fullname="{{this.fullname}}" data-position="{{this.position_name}}" data-state="{{this.state_name}}">
+                  <tr class="candidate-row"
+                      data-fullname="{{this.fullname}}" 
+                      data-position="{{this.position_name}}" 
+                      data-state="{{this.state_name}}"
+                      data-matter="{{this.matter_name}}"
+                  >
                     <td class="d-flex align-items-center" style="cursor: pointer">
                       {{#if this.image_url}}
                       <div class="avatar-content" onClick="window.open('/candidates/{{this.id}}', '_blank')" >
@@ -271,21 +275,17 @@
                         {{else}}
                         <span class="badge badge-info">M</span>
                         {{/if}}
+                        <span class="badge badge-primary">{{ this.matter_name }}</span>
                       </div>
                     </td>
                     <td>
                         {{this.position_name}}
                     </td>
+                    <td>
+                      {{ this.matter_name}}
+                    </td>
                     <td>{{#if this.district_name}}{{this.district_name}}{{else}}N/A{{/if}}</td>
                     <td>{{this.poder_name}}</td>
-                    <td>
-                      {{#if this.email}}
-                      <a href="mailto:{{this.email}}"><i class="fa fa-envelope"></i> {{this.email}}</a><br>
-                      {{/if}}
-                      {{#if this.telephone}}
-                      <a href="tel:{{this.telephone}}"><i class="fa fa-phone"></i> {{this.telephone}}</a>
-                      {{/if}}
-                    </td>
                     <td>
                       <div class="btn-group" role="group">
                         <a href="/candidates/{{this.id}}" class="btn btn-sm btn-primary">
@@ -325,6 +325,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+    <script src="/js/pagination.js"></script>
     <script src="/js/app.js"></script>
         
     <style>
@@ -347,17 +348,26 @@
 
 
     <script>
-      // Golbal variables
-      const LOGIN_PATH = "/login/facebook";
-      var CURRENT_USER = {};
-      // Register Handlebars helper for equality check
-      Handlebars.registerHelper('eq', function(a, b) {
-        return a === b;
-      });
+        // Golbal variables
+        const LOGIN_PATH = "/login/facebook";
+        var CURRENT_USER = {};
+
+        // Pagination configuration
+        const rowsPerPage = 50;
+        const rows = $('#candidatesTable tbody tr');
+        const rowsCount = rows.length;
+        const pagesCount = Math.ceil(rowsCount / rowsPerPage);
+        let currentPage = 1;
+
+
+        // Register Handlebars helper for equality check
+        Handlebars.registerHelper('eq', function(a, b) {
+            return a === b;
+        });
       
       $(document).ready(function() {
-        // Checks every 30 minutes
-        setupLoginCheck(30);
+        // Checks every 120 minutes
+        setupLoginCheck(120);
 
         // Handle reaction button clicks
         $(document).on('click', '.reaction-btn', function() {
@@ -395,104 +405,12 @@
             });
         });
 
+        // Filter by matter buttons
+        $(document).on('click', '.submenu-item', function() {
+            const matter = $(this).data('matter');
+            matterFilter(matter);
+        });
 
-
-        // Pagination configuration
-        const rowsPerPage = 50;
-        const rows = $('#candidatesTable tbody tr');
-        const rowsCount = rows.length;
-        const pagesCount = Math.ceil(rowsCount / rowsPerPage);
-        let currentPage = 1;
-        
-        // Function to display the appropriate rows for the current page
-        function displayRows() {
-          rows.hide();
-          const start = (currentPage - 1) * rowsPerPage;
-          const end = start + rowsPerPage;
-          
-          // Only show visible rows based on both pagination and search
-          const visibleRows = rows.filter(':not(.filtered)');
-          visibleRows.slice(start, end).show();
-          
-          // Update pagination UI
-          updatePagination();
-        }
-        
-        // Function to update pagination controls
-        function updatePagination() {
-          const visibleRows = rows.filter(':not(.filtered)').length;
-          const filteredPagesCount = Math.ceil(visibleRows / rowsPerPage);
-          
-          const pagination = $('#pagination');
-          pagination.empty();
-          
-          // Previous button
-          pagination.append(`
-            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-              <a class="page-link" href="#" data-page="${currentPage - 1}">Previous</a>
-            </li>
-          `);
-          
-          // Page numbers
-          for (let i = 1; i <= filteredPagesCount; i++) {
-            pagination.append(`
-              <li class="page-item ${currentPage === i ? 'active' : ''}">
-                <a class="page-link" href="#" data-page="${i}">${i}</a>
-              </li>
-            `);
-          }
-          
-          // Next button
-          pagination.append(`
-            <li class="page-item ${currentPage === filteredPagesCount ? 'disabled' : ''}">
-              <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
-            </li>
-          `);
-          
-          // Add click event for pagination links
-          $('.page-link').click(function(e) {
-            e.preventDefault();
-            const page = parseInt($(this).data('page'));
-            
-            // Only navigate if it's a valid page
-            if (page >= 1 && page <= filteredPagesCount && page !== currentPage) {
-              currentPage = page;
-              displayRows();
-            }
-          });
-        }
-        
-        // Search functionality
-        function performSearch() {
-          const searchTerm = $('#searchInput').val().toLowerCase();
-          
-          // If search term is empty, show all rows
-          if (searchTerm === '') {
-            rows.removeClass('filtered');
-          } else {
-            // Loop through all rows and check if they match the search
-            rows.each(function() {
-              const $row = $(this);
-              const fullname = $row.data('fullname').toLowerCase();
-              const position = $row.data('position').toLowerCase();
-              const state = $row.data('state').toLowerCase();
-              
-              // Check if any of the data contains the search term
-              if (fullname.includes(searchTerm) || 
-                  position.includes(searchTerm) || 
-                  state.includes(searchTerm)) {
-                $row.removeClass('filtered');
-              } else {
-                $row.addClass('filtered');
-              }
-            });
-          }
-          
-          // Reset to first page and display appropriate rows
-          currentPage = 1;
-          displayRows();
-        }
-        
         // Initial setup
         displayRows();
         
@@ -509,9 +427,6 @@
           //}
         });
       });
-
-
-
 
     </script>
   </body>
