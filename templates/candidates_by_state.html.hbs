@@ -139,7 +139,9 @@
 
             </div>
 
-            <!-- Category submenu -->
+
+          {{#if judges }}
+            <!-- Judges Category submenu -->
             <div class="category-submenu">
               <ul class="nav nav-pills nav-justified submenu-list">
                 <li class="nav-item submenu-item">
@@ -162,11 +164,29 @@
                 </li>
               </ul>
             </div>
+          {{/if}}
+
+          {{#if mtsj }}
+            <!-- mtsj Category submenu -->
+            <div class="category-submenu">
+              <ul class="nav nav-pills nav-justified submenu-list">
+                <li class="nav-item submenu-item">
+                  <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="civil">CIVIL</a>
+                </li>
+                <li class="nav-item submenu-item">
+                  <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="familiar">FAMILIAR</a>
+                </li>
+                <li class="nav-item submenu-item">
+                  <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="penal">PENAL</a>
+                </li>
+              </ul>
+            </div>
+          {{/if}}
+
+
+
           </div>
         </div>
-
-
-
 
         <div class="row justify-content-center">
           <div class="col-md-8 mb-4">
