@@ -51,9 +51,10 @@ fn rocket() -> _ {
         .mount(
             "/candidates",
             routes![
-                candidates::add, candidates::delete,
+                candidates::add,
                 candidates::get_json,
-                candidates::get_html, candidates::list_all,
+                candidates::get_html,
+                candidates::list_all,
                 candidates::list_by_state,
                 candidates::judges_by_state,
                 candidates::mtsj_by_state,
