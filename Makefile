@@ -40,5 +40,4 @@ clean:
 release: release_dirs
 	cargo build --release; \
 		objcopy --compress-debug-sections target/release/chaca ./bin/main
-	strip ./bin/main
 
