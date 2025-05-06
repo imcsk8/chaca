@@ -8,6 +8,7 @@
 
 // Ask the API for user status, if logged it returns user info
 function checkLoginStatus() {
+	console.log("Checking login status...");
     $.ajax({
         url: '/auth/logged',
         type: 'GET',
@@ -29,6 +30,7 @@ function checkLoginStatus() {
             var output = JSON.stringify(xhr);
             console.log(`User is not logged in, working with limited actions: ${output}`);
             CURRENT_USER = {};
+            toggleLoginInfo();
         }
     });
 }
