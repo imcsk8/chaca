@@ -85,7 +85,7 @@
                           <i class="fa fa-file-text-o"></i> Ver Curriculum
                         </a>
                         {{/if}}
-                        
+
                         {{#if candidate.website}}
                         <a href="{{ candidate.website }}" target="_blank" class="btn btn-sm btn-success mb-2">
                           <i class="fa fa-globe"></i> Sitio Web
@@ -98,6 +98,42 @@
                         </a>
                         {{/if}}
                       </div>
+
+                      <!-- Candidate comments -->
+                      <div id="candidate-comments">
+
+                          <h5 class="text-center">Comentarios</h5>
+
+                          <!-- Comment form -->
+                          <div class="comment-form mb-3">
+                            <textarea id="comment-text" class="form-control mb-2" rows="3" placeholder="Escribe tu comentario..."></textarea>
+                            <button id="submit-comment" class="btn btn-primary btn-block" data-candidate-id="{{candidate.id}}">
+                              <i class="fa fa-comment"></i> Publicar Comentario
+                            </button>
+                          </div>
+
+                          <!-- Comments list -->
+                          <div class="comments-list">
+                            <div id="comments-container">
+                              {{#if candidate.comments}}
+                                {{#each candidate.comments}}
+                                  <div class="comment-item card mb-2">
+                                    <div class="card-body">
+                                      <h6 class="comment-author">{{this.user_name}}</h6>
+                                      <p class="comment-text">{{this.comment_text}}</p>
+                                      <small class="text-muted">{{this.created_at}}</small>
+                                    </div>
+                                  </div>
+                                {{/each}}
+                              {{else}}
+                                <p class="text-center text-muted">No hay comentarios aún. ¡Sé el primero en comentar!</p>
+                              {{/if}}
+                            </div>
+                          </div>
+
+
+                      </div>
+
                     </div>
                   </div>
 
@@ -224,57 +260,180 @@
       .reaction-btn {
         margin-right: 3px;
       }
+
+
+      .comment-item {
+        background-color: #f9f9f9;
+      }
+
+      .comment-author {
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .comment-text {
+        margin-bottom: 5px;
+      }
+
+      #candidate-comments {
+        border-top: 1px solid #dee2e6;
+        padding-top: 15px;
+      }
+
     </style>
 
     <script>
-      // Register Handlebars helper for equality check
-      const LOGIN_PATH = "/login/facebook";
-      var CURRENT_USER = {};
-      // Register Handlebars helper for equality check
-      Handlebars.registerHelper('eq', function(a, b) {
-        return a === b;
-      });
-
-      $(document).ready(function() {
-        // Checks every 30 minutes
-        setupLoginCheck(30);
-
-        // Handle reaction button clicks
-        $(document).on('click', '.reaction-btn', function() {
-            const candidateId = $(this).data('candidate-id');
-            const reactionType = $(this).data('reaction-type');
-
-            // Check if the user is logged in
-            if ( isEmpty(CURRENT_USER) ) {
-                alert("Debes acceder antes de poder comentar o poner una reacción");
-                return;
-            }
-
-            // Build payload
-            var reaction_payload = {
-                user_id: CURRENT_USER.id,
-                candidate_id: candidateId,
-                oauth_user_id: CURRENT_USER.oauth_id,
-                reaction_type: reactionType,
-            };
-
-            // Send reaction to server
-            $.ajax({
-                url: `/candidates/${candidateId}/reaction`,
-                method: 'PUT',
-                data: JSON.stringify(reaction_payload),
-                contentType: 'application/json',
-                success: function() {
-                    // Reload reactions for this candidate to update counts
-                    console.log("Load reactions...");
-                    loadCandidateReactions(candidateId);
-                },
-                error: function(err) {
-                    console.error('Error sending reaction', err);
-                }
-            });
+        // Register Handlebars helper for equality check
+        const LOGIN_PATH = "/login/facebook";
+        var CURRENT_USER = {};
+        // Register Handlebars helper for equality check
+        Handlebars.registerHelper('eq', function(a, b) {
+            return a === b;
         });
-      });
+
+        $(document).ready(function() {
+            // Checks every 30 minutes
+            setupLoginCheck(30);
+
+
+            // Load comments when page loads
+            // TODO check if needed: loadCandidateComments({{candidate.id}});
+
+            // Handle reaction button clicks
+            $(document).on('click', '.reaction-btn', function() {
+                const candidateId = $(this).data('candidate-id');
+                const reactionType = $(this).data('reaction-type');
+
+                // Check if the user is logged in
+                if ( isEmpty(CURRENT_USER) ) {
+                    alert("Debes acceder antes de poder comentar o poner una reacción");
+                    return;
+                }
+
+                // Build payload
+                var reaction_payload = {
+                    user_id: CURRENT_USER.id,
+                    candidate_id: candidateId,
+                    oauth_user_id: CURRENT_USER.oauth_id,
+                    reaction_type: reactionType,
+                };
+
+                // Send reaction to server
+                $.ajax({
+                    url: `/candidates/${candidateId}/reaction`,
+                    method: 'PUT',
+                    data: JSON.stringify(reaction_payload),
+                    contentType: 'application/json',
+                    success: function() {
+                        // Reload reactions for this candidate to update counts
+                        console.log("Load reactions...");
+                        loadCandidateReactions(candidateId);
+                    },
+                    error: function(err) {
+                        console.error('Error sending reaction', err);
+                    }
+                });
+            });
+
+
+            // Comments Functions
+
+            // Handle comment submission
+            $('#submit-comment').on('click', function() {
+                const candidateId = $(this).data('candidate-id');
+                const commentText = $('#comment-text').val().trim();
+
+                // Validate comment text
+                if (!commentText) {
+                    alert('Por favor escribe un comentario antes de publicar.');
+                    return;
+                }
+
+                // Check if the user is logged in
+                if (isEmpty(CURRENT_USER)) {
+                    alert('Debes acceder antes de poder comentar.');
+                    return;
+                }
+
+                // Build comment payload
+                const commentPayload = {
+                    user_id: CURRENT_USER.id,
+                    oauth_user_id: CURRENT_USER.oauth_id,
+                    candidate_id: candidateId,
+                    comment_text: commentText,
+                    user_name: CURRENT_USER.name || 'Usuario'
+                };
+
+                // Send comment to server
+                $.ajax({
+                    url: `/candidates/${candidateId}/comment`,
+                    method: 'PUT',
+                    data: JSON.stringify(commentPayload),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        // Clear the comment field
+                        $('#comment-text').val('');
+
+                        // Reload comments to show the new one
+                        loadCandidateComments(candidateId);
+                    },
+                    error: function(err) {
+                        console.error('Error al enviar comentario', err);
+                        alert('Error al enviar tu comentario. Por favor intenta nuevamente.');
+                    }
+                }); // ajax request
+            }); //  submit-comment click event
+        }); // document.ready
+
+
+        // Function to load candidate comments
+        function loadCandidateComments(candidateId) {
+            $.ajax({
+                url: `/candidates/${candidateId}/comments`,
+                method: 'GET',
+                success: function(comments) {
+                    // Clear existing comments
+                    const commentsContainer = $('#comments-container');
+                    commentsContainer.empty();
+
+                    // If no comments, show a message
+                    if (!comments || comments.length === 0) {
+                        commentsContainer.html('<p class="text-center text-muted">No hay comentarios aún. ¡Sé el primero en comentar!</p>');
+                        return;
+                    }
+
+                    // Add each comment to the container
+                    comments.forEach(function(comment) {
+                        const commentHtml = `
+                            <div class="comment-item card mb-2">
+                                <div class="card-body">
+                                    <h6 class="comment-author">${comment.user_name}</h6>
+                                    <p class="comment-text">${comment.comment_text}</p>
+                                    <small class="text-muted">${formatDate(comment.created_at)}</small>
+                                </div>
+                            </div>
+                        `;
+                        commentsContainer.append(commentHtml);
+                    }); // comments.forEach
+                }, // success function
+                error: function(err) {
+                    console.error('Error loading comments', err);
+                    $('#comments-container').html('<p class="text-center text-danger">Error al cargar comentarios.</p>');
+                } // error function
+            }); // ajax GET
+        } // loadCandidateComments
+
+        // Helper function to format dates
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-MX', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } // formatDate
     </script>
   </body>
 </html>
