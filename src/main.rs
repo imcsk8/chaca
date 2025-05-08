@@ -21,6 +21,7 @@ pub mod models;
 pub mod schema;
 pub mod types;
 pub mod users;
+pub mod comments;
 
 pub static STATIC_FILES_DIR: &str = "www/static";
 
@@ -62,6 +63,9 @@ fn rocket() -> _ {
                 candidates::add_reaction,
                 candidates::get_reactions,
                 candidates::delete_reaction,
+                comments::add_comment,
+                comments::delete_comment,
+                comments::get_comments,
             ]
         )
         /*.mount(
