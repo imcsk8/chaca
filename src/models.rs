@@ -66,6 +66,8 @@ pub struct CandidateReaction {
     pub user_id: Uuid,
     pub reaction_type: Reaction,
     pub created_at: Option<DateTime<Utc>>,
+    pub updated_at: DateTime<Utc>,
+    pub is_edited: Option<bool>,
 }
 
 #[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize, AsChangeset)]
@@ -146,6 +148,7 @@ pub struct Comment {
     pub is_edited: Option<bool>,
     pub is_hidden: Option<bool>,
     pub likes_count: Option<i32>,
+    pub user_name: String,
 }
 
 #[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize, AsChangeset)]
