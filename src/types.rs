@@ -6,8 +6,11 @@ use diesel::pg::{Pg,PgValue};
 use diesel::serialize::{IsNull,Output,ToSql};
 use std::io::Write;
 use serde::{Serialize, Deserialize};
-use std::fmt::{Display, Formatter, Result};
+use std::fmt::{Display, Formatter, Result as FmtResult};
 use diesel::QueryId;
+use rocket::response::Debug;
+
+pub type Result<T, E = Debug<diesel::result::Error>> = std::result::Result<T, E>;
 
 // Enum for types of reactions
 #[derive(Debug, Clone, Copy, SqlType, QueryId)]
@@ -262,7 +265,7 @@ pub enum Positions {
 
 /// Display for Positions enum
 impl Display for Positions {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         let value = self.clone() as i32;
         write!(f, "{}", value)
     }
