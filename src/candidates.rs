@@ -8,7 +8,7 @@ use chaca_macros::{
     candidate_reactions_query,
 };
 use crate::db::*;
-use crate::types::{Positions, Reaction};
+use crate::types::{Positions, Reaction, Result};
 use crate::models::{Candidate, CandidateReaction};
 //use crate::schema::candidate::dsl::*;
 use crate::schema::candidate;
@@ -26,10 +26,7 @@ use serde_json::json;
 use rocket::serde::{Deserialize, Serialize};
 use diesel::sql_types::{BigInt, Uuid as SqlUuid};
 use diesel::QueryableByName;
-// TODO: check diesel version use diesel::dsl::DuplicatedKeys;
-//use uuid::{parse_str};
 
-type Result<T, E = Debug<diesel::result::Error>> = std::result::Result<T, E>;
 
 #[derive(Queryable, QueryableByName, Serialize, Deserialize, Debug)]
 pub struct CandidateReactions {
