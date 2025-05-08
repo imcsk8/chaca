@@ -71,6 +71,8 @@ diesel::table! {
         user_id -> Uuid,
         reaction_type -> ReactionType,
         created_at -> Nullable<Timestamptz>,
+        updated_at -> Timestamptz,
+        is_edited -> Nullable<Bool>,
     }
 }
 
@@ -152,6 +154,7 @@ diesel::table! {
         is_edited -> Nullable<Bool>,
         is_hidden -> Nullable<Bool>,
         likes_count -> Nullable<Int4>,
+        user_name -> Text,
     }
 }
 
