@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS comments (
     comment_id SERIAL PRIMARY KEY,
     candidate_id UUID REFERENCES candidate(id) ON DELETE CASCADE,
     user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_name TEXT NOT NULL, -- Denormalization for more fast queries
     content TEXT NOT NULL,
     parent_comment_id INTEGER REFERENCES comments(comment_id) ON DELETE CASCADE,
     resource_id VARCHAR(100) NOT NULL,  -- ID of the resource being commented on (article, post, etc.)
@@ -54,6 +55,21 @@ USING btree
     candidate_id,
     user_id
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_candidate_user_name ON comments
+USING btree
+(
+    user_name
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_candidate_user_comment ON comments
+USING btree
+(
+    comment_id,
+    candidate_id,
+    user_id
+);
+
 
 
 CREATE TABLE IF NOT EXISTS comment_reactions (
