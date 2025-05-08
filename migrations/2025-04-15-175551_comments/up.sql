@@ -14,8 +14,8 @@ CREATE TABLE IF NOT EXISTS comments (
     user_name TEXT NOT NULL, -- Denormalization for more fast queries
     content TEXT NOT NULL,
     parent_comment_id INTEGER REFERENCES comments(comment_id) ON DELETE CASCADE,
-    resource_id VARCHAR(100) NOT NULL,  -- ID of the resource being commented on (article, post, etc.)
-    resource_type VARCHAR(50) NOT NULL,  -- Type of resource (article, video, product, etc.)
+    resource_id VARCHAR(100) NOT NULL,  -- ID of the resource being commented on (article, post, etc.) TODO: REMOVE
+    resource_type VARCHAR(50) NOT NULL,  -- Type of resource (article, video, product, etc.) TODO: change to enum
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE,
     is_edited BOOLEAN DEFAULT FALSE,
@@ -23,11 +23,10 @@ CREATE TABLE IF NOT EXISTS comments (
     likes_count INTEGER DEFAULT 0
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_resource ON comments
+CREATE INDEX IF NOT EXISTS idx_resource ON comments
 USING btree
 (
-    resource_type,
-    resource_id
+    resource_type
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_user_id ON comments
