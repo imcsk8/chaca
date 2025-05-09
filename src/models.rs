@@ -141,14 +141,13 @@ pub struct Comment {
     pub user_id: Uuid,
     pub content: String,
     pub parent_comment_id: Option<i32>,
-    pub resource_id: String,
-    pub resource_type: String,
     pub created_at: Option<DateTime<Utc>>,
     pub updated_at: Option<DateTime<Utc>>,
     pub is_edited: Option<bool>,
     pub is_hidden: Option<bool>,
     pub likes_count: Option<i32>,
     pub user_name: String,
+    pub resource_type: ResourceType,
 }
 
 #[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize, AsChangeset)]
