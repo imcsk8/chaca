@@ -252,6 +252,88 @@ impl ToString for AmbitoEleccion {
 }
 
 
+// Enum for ResourceType
+#[derive(Debug, Clone, Copy, SqlType, QueryId)]
+#[diesel(postgres_type(name = "resource_type", schema = "public"))]
+#[diesel(sql_type = ResourceType)]
+pub struct ResourceTypeType;
+
+//#[derive(Clone, Debug, AsExpression, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, AsExpression, FromSqlRow, Serialize, Deserialize)]
+#[diesel(sql_type = ResourceTypeType)]
+pub enum ResourceType {
+    Profile,
+    Trajectory,
+    Matter,
+    Position,
+    Schooling,
+}
+
+// Step 3: Implementation for serialization (Rust -> DB)
+impl ToSql<ResourceTypeType, Pg> for ResourceType {
+    fn to_sql<'b>(&'b self, out: &mut Output<'b, '_, Pg>) -> serialize::Result {
+        match *self {
+            ResourceType::Profile    => out.write_all(b"PROFILE")?,
+            ResourceType::Trajectory => out.write_all(b"TRAJECTORY")?,
+            ResourceType::Matter     => out.write_all(b"MATTER")?,
+            ResourceType::Position   => out.write_all(b"POSITION")?,
+            ResourceType::Schooling  => out.write_all(b"SCHOOLING")?,
+        }
+        Ok(IsNull::No)
+    }
+}
+
+// Step 4: Implementation for deserialization (DB -> Rust)
+impl FromSql<ResourceTypeType, Pg> for ResourceType {
+    fn from_sql(value: PgValue<'_>) -> deserialize::Result<Self> {
+        match value.as_bytes() {
+            b"PROFILE"    => Ok(ResourceType::Profile),
+            b"TRAJECTORY" => Ok(ResourceType::Trajectory),
+            b"MATTER"     => Ok(ResourceType::Matter),
+            b"POSITION"   => Ok(ResourceType::Position),
+            b"SCHOOLING"  => Ok(ResourceType::Schooling),
+            _ => Err("Unrecognized enum variant".into()),
+        }
+    }
+}
+
+ /// For converting from String
+impl From<String> for ResourceType {
+    fn from(item: String) -> Self {
+        Self::from(item.as_str())
+    }
+}
+
+/// Convert from &str
+impl From<&str> for ResourceType {
+    fn from(item: &str) -> Self {
+        match item {
+            "PROFILE"    => ResourceType::Profile,
+            "TRAJECTORY" => ResourceType::Trajectory,
+            "MATTER"     => ResourceType::Matter,
+            "POSITION"   => ResourceType::Position,
+            "SCHOOLING"  => ResourceType::Schooling,
+
+            &_ => panic!("ResourceType solo puede ser: ND, DISTRITO JUDICIAL, ESTATAL, FEDERAL"),
+        }
+    }
+}
+
+/// Convert to String
+impl ToString for ResourceType {
+    fn to_string(&self) -> String {
+        match *self {
+            ResourceType::Profile    => String::from("PROFILE"),
+            ResourceType::Trajectory => String::from("TRAJECTORY"),
+            ResourceType::Matter     => String::from("MATTER"),
+            ResourceType::Position   => String::from("POSITION"),
+            ResourceType::Schooling  => String::from("SCHOOLING"),
+
+
+        }
+    }
+}
+
 /// Representation of the cat_positions catalog contents
 #[repr(i32)]
 #[derive(Debug, Clone)]
