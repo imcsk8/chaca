@@ -4,6 +4,9 @@ DROP TYPE IF EXISTS reaction CASCADE;
 CREATE TYPE reaction AS
 ENUM ('NA', 'LIKE','LOVE','LAUGH','DISLIKE','BAD','DANGER');
 
+DROP TYPE IF EXISTS resource_type CASCADE;
+CREATE TYPE resource_type AS
+ENUM ('PROFILE', 'TRAJECTORY','MATTER','POSITION','SCHOOLING');
 
 -- Comments
 
@@ -14,8 +17,7 @@ CREATE TABLE IF NOT EXISTS comments (
     user_name TEXT NOT NULL, -- Denormalization for more fast queries
     content TEXT NOT NULL,
     parent_comment_id INTEGER REFERENCES comments(comment_id) ON DELETE CASCADE,
-    resource_id VARCHAR(100) NOT NULL,  -- ID of the resource being commented on (article, post, etc.) TODO: REMOVE
-    resource_type VARCHAR(50) NOT NULL,  -- Type of resource (article, video, product, etc.) TODO: change to enum
+    resource_type resource_type NOT NULL DEFAULT 'PROFILE',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE,
     is_edited BOOLEAN DEFAULT FALSE,
@@ -29,33 +31,33 @@ USING btree
     resource_type
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_user_id ON comments
-USING btree
-(
-    parent_comment_id
-);
-
-CREATE UNIQUE INDEX IF NOT EXISTS idx_parent ON comments
+CREATE INDEX IF NOT EXISTS idx_user_id ON comments
 USING btree
 (
     user_id
 );
 
+CREATE INDEX IF NOT EXISTS idx_parent ON comments
+USING btree
+(
+    parent_comment_id
+);
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_candidate ON comments
+
+CREATE INDEX IF NOT EXISTS idx_candidate ON comments
 USING btree
 (
     candidate_id
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_candidate_user ON comments
+CREATE INDEX IF NOT EXISTS idx_candidate_user ON comments
 USING btree
 (
     candidate_id,
     user_id
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_candidate_user_name ON comments
+CREATE INDEX IF NOT EXISTS idx_candidate_user_name ON comments
 USING btree
 (
     user_name
