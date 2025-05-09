@@ -23,6 +23,7 @@ diesel_ext -t -s src/schema.rs -m             \
   -M "ReactionType Reaction"                  \
   -M "SexoType Sexo"                          \
   -M "AmbitoEleccionType AmbitoEleccion"      \
+  -M "ResourceTypeType ResourceType"          \
   -I "rocket::serde::{ Deserialize, Serialize }"       \
   -d "${DERIVE_FLAGS}" | sed -f generate_models/update_model_fields.sed \
   > src/models.rs
