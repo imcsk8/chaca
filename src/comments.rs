@@ -1,4 +1,5 @@
 use crate::claims::Claims;
+use crate::comment_guard::*;
 use crate::db::*;
 use crate::models::Comment;
 use crate::schema::comments::dsl::*;
@@ -14,6 +15,7 @@ use rocket_sync_db_pools::diesel;
 use rocket::http::Status;
 use serde_json::json;
 use rocket::serde::{Deserialize, Serialize};
+use rocket::catch;
 use diesel::sql_types::{BigInt, Uuid as SqlUuid};
 use diesel::QueryableByName;
 
@@ -26,33 +28,25 @@ use diesel::QueryableByName;
 *                                                                              *
 ********************************************************************************/
 
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CandidateCommentPayload {
-    pub user_id: Uuid,
-    pub oauth_user_id: String,
-    pub candidate_id: Uuid,
-    pub user_name: String,
-    pub comment_text: String,
-    pub resource_type: ResourceType,
-}
-
+// TODO: fix comment_guard module
 /// Adds a candidate comment
-#[put("/<candidate_id_req>/comment", format = "json", data = "<candidate_comment>")]
+//#[put("/<candidate_id_req>/comment", format = "json", data = "<candidate_comment>")]
+#[put("/<candidate_id_req>/comment", format = "json")]
 pub async fn add_comment(
     candidate_id_req: Uuid,
     user: Claims,
     cdb: ChacaDB,
-    candidate_comment: Json<CandidateCommentPayload>
+    comment_guard: CommentGuard
+    //candidate_comment: Json<CandidateCommentPayload>,
 ) -> Result<Custom<String>> {
-    let input_comment = candidate_comment.into_inner();
+    let input_comment = comment_guard.0; // Validated payload
     let resource_type_val = ResourceType::from(input_comment.resource_type);
     cdb.run(move |conn| {
         use crate::schema::comments::dsl::*;
         match diesel::insert_into(comments)
             .values((
                 candidate_id.eq(candidate_id_req),
-                user_id.eq(input_comment.user_id), // TODO: Get this from the database to prevent user injection use the User::load_by_oauth function
+                user_id.eq(input_comment.user_id),
                 user_name.eq(user.name),
                 resource_type.eq(resource_type_val),
                 content.eq(input_comment.comment_text)
@@ -124,3 +118,5 @@ pub async fn delete_comment(
         Err(NotFound("Could not find the comment".to_string()))
     }
 }
+
+
