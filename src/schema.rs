@@ -10,6 +10,10 @@ pub mod sql_types {
     pub struct Reaction;
 
     #[derive(diesel::query_builder::QueryId, Clone, diesel::sql_types::SqlType)]
+    #[diesel(postgres_type(name = "resource_type"))]
+    pub struct ResourceType;
+
+    #[derive(diesel::query_builder::QueryId, Clone, diesel::sql_types::SqlType)]
     #[diesel(postgres_type(name = "sexo"))]
     pub struct Sexo;
 }
@@ -139,22 +143,23 @@ diesel::table! {
 }
 
 diesel::table! {
+    use diesel::sql_types::*;
+    use super::sql_types::ResourceType;
+    use crate::types::ResourceTypeType;
+
     comments (comment_id) {
         comment_id -> Int4,
         candidate_id -> Nullable<Uuid>,
         user_id -> Uuid,
         content -> Text,
         parent_comment_id -> Nullable<Int4>,
-        #[max_length = 100]
-        resource_id -> Varchar,
-        #[max_length = 50]
-        resource_type -> Varchar,
         created_at -> Nullable<Timestamptz>,
         updated_at -> Nullable<Timestamptz>,
         is_edited -> Nullable<Bool>,
         is_hidden -> Nullable<Bool>,
         likes_count -> Nullable<Int4>,
         user_name -> Text,
+        resource_type -> ResourceTypeType,
     }
 }
 
