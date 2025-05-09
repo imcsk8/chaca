@@ -2,7 +2,7 @@ use crate::claims::Claims;
 use crate::db::*;
 use crate::models::Comment;
 use crate::schema::comments::dsl::*;
-use crate::types::{Positions, Reaction, Result};
+use crate::types::{Positions, Reaction, ResourceType, Result};
 use diesel::prelude::*;
 use rocket::response::{Debug, Redirect};
 use rocket::response::status::{Created, Custom, NotFound};
@@ -32,8 +32,9 @@ pub struct CandidateCommentPayload {
     pub user_id: Uuid,
     pub oauth_user_id: String,
     pub candidate_id: Uuid,
-    pub user_fullname: String,
+    pub user_name: String,
     pub comment_text: String,
+    pub resource_type: ResourceType,
 }
 
 /// Adds a candidate comment
@@ -45,7 +46,7 @@ pub async fn add_comment(
     candidate_comment: Json<CandidateCommentPayload>
 ) -> Result<Custom<String>> {
     let input_comment = candidate_comment.into_inner();
-
+    let resource_type_val = ResourceType::from(input_comment.resource_type);
     cdb.run(move |conn| {
         use crate::schema::comments::dsl::*;
         match diesel::insert_into(comments)
@@ -53,6 +54,7 @@ pub async fn add_comment(
                 candidate_id.eq(candidate_id_req),
                 user_id.eq(input_comment.user_id), // TODO: Get this from the database to prevent user injection use the User::load_by_oauth function
                 user_name.eq(user.name),
+                resource_type.eq(resource_type_val),
                 content.eq(input_comment.comment_text)
             ))
             .execute(conn)
