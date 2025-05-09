@@ -9,9 +9,6 @@ use rocket_oauth2::OAuth2;
 use crate::auth::rocket_uri_macro_facebook_login;
 use crate::claims::{AppState, Facebook, JwtConfig};
 use reqwest::Client;
-use serde::{Deserialize, Serialize};
-
-type Result<T, E = Debug<diesel::result::Error>> = std::result::Result<T, E>;
 
 pub mod candidates;
 pub mod auth;
@@ -21,7 +18,8 @@ pub mod models;
 pub mod schema;
 pub mod types;
 pub mod users;
-pub mod comments;
+//pub mod comments;
+//pub mod comment_guard;
 
 pub static STATIC_FILES_DIR: &str = "www/static";
 
@@ -63,9 +61,9 @@ fn rocket() -> _ {
                 candidates::add_reaction,
                 candidates::get_reactions,
                 candidates::delete_reaction,
-                comments::add_comment,
+                /* TODO: comments branch comments::add_comment,
                 comments::delete_comment,
-                comments::get_comments,
+                comments::get_comments,*/
             ]
         )
         /*.mount(
