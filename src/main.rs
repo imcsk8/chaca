@@ -50,7 +50,6 @@ fn rocket() -> _ {
         .mount(
             "/candidates",
             routes![
-                candidates::add,
                 candidates::get_json,
                 candidates::get_html,
                 candidates::list_all,
