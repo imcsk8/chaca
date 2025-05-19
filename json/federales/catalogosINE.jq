@@ -175,6 +175,50 @@ def get_cargo($idCargo):
     select(.idTipoCandidatura == $idCargo).appCargoId
 ;
 
+
+# Get the database ID of the matter name
+def get_matter_uuid($matter_name):
+    {
+        "matters": [
+          {
+            "uuid": "44ebdda1-0622-46db-9d7c-14fee2cad40c",
+            "name": "NA"
+          },
+          {
+            "uuid": "bd829a6a-9219-47f3-ae12-06be7be407b9",
+            "name": "CIVIL"
+          },
+          {
+            "uuid": "5d262a6f-1a5c-4964-b086-b271f0302e66",
+            "name": "DISCIPLINARIO"
+          },
+          {
+            "uuid": "cc1d47c3-f547-47f5-9bf4-e9058e50c825",
+            "name": "FAMILIAR"
+          },
+          {
+            "uuid": "586dec54-1bce-4fd9-a1ac-2a65013362c4",
+            "name": "LABORAL"
+          },
+          {
+            "uuid": "118f6595-7be3-4c26-85a5-c94c681ab5eb",
+            "name": "MENOR"
+          },
+          {
+            "uuid": "232951c0-2afd-48ae-a19a-1407a0831567",
+            "name": "MIXTA"
+          },
+          {
+            "uuid": "4dccab04-adc2-4f75-a0c2-48fc5fedf332",
+            "name": "PENAL"
+          }
+        ]
+    }.matters[]
+    |
+    select(.name == $matter_name).uuid
+;
+
+
 # Convert sex to the postgresql enum
 def get_sexo($sex_initial):
     if $sex_initial == "H" then
@@ -190,14 +234,14 @@ def get_sexo($sex_initial):
 def get_age($birthDate):
     (now | strftime("%Y") | tonumber ) as $now_year |
     if $birthDate == null then
-        null
+        0
     else
         ($birthDate | tostring) | split("-") 
         |
         if .[0] != null then
             $now_year - (.[0] | tonumber)
         else
-            null
+            0
         end
     end
 ;
