@@ -56,6 +56,7 @@ INSERT INTO public.cat_district (id, name, id_inegi) VALUES (11, 'MANUEL OJINAGA
 INSERT INTO public.cat_district (id, name, id_inegi) VALUES (12, 'MINA', 8);
 INSERT INTO public.cat_district (id, name, id_inegi) VALUES (13, 'MORELOS', 8);
 INSERT INTO public.cat_district (id, name, id_inegi) VALUES (14, 'RAYON', 8);
+INSERT INTO public.cat_district (id, name, id_inegi) VALUES (9999, 'FEDERAL', 0);
 
 
 --
@@ -95,4 +96,7 @@ INSERT INTO public.cat_positions (id, cargo, male_name, female_name, long_name) 
 INSERT INTO public.cat_positions (id, cargo, male_name, female_name, long_name) VALUES (3, 'MTSJ', 'MAGISTRADO', 'MAGISTRADA', 'DE TRIBUNAL SUPERIOR DE JUSTICIA');
 INSERT INTO public.cat_positions (id, cargo, male_name, female_name, long_name) VALUES (4, 'MTDJ', 'MAGISTRADO', 'MAGISTRADA', 'DE TRIBUNAL DE DISCIPLINA  JUDICIAL');
 INSERT INTO public.cat_positions (id, cargo, male_name, female_name, long_name) VALUES (5, 'MSCJN', 'MINISTRO', 'MINISTRA', 'DE LA SUPREMA CORTE DE JUSTICIA DE LA NACIÓN');
+INSERT INTO public.cat_positions (id, cargo, male_name, female_name, long_name) VALUES (6, 'MSSTE', 'MAGISTRADO', 'MAGISTRADA', 'DE LA SALA SUPERIOR DEL TRIBUNAL ELECTORAL');
+INSERT INTO public.cat_positions (id, cargo, male_name, female_name, long_name) VALUES (7, 'MSRTE', 'MAGISTRADO', 'MAGISTRADA', 'DE LA SALA REGIONAL DEL TRIBUNAL ELECTORAL');
+INSERT INTO public.cat_positions (id, cargo, male_name, female_name, long_name) VALUES (8, 'MTCCA', 'MAGISTRADO', 'MAGISTRADA', 'DE TRIBUNALES COLEGIADOS DE CIRCUITO Y COLEGIADOS DE APELACIÓN');
 
