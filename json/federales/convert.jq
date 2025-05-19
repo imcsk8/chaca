@@ -1,5 +1,6 @@
 include "catalogosINE";
 
+# Transform the INE files to a format that can be digested by Postgres
 [
 . as $root 
 | $root.candidatos[]
@@ -9,7 +10,8 @@ include "catalogosINE";
         idCandidato: .idCandidato,
         cargo: get_cargo($candidato.idTipoCandidatura),
         municipio: "",
-        distrito: "00-N/A",
+        state: $candidato.idEstadoEleccion,
+        distrito: ($candidato.idDistritoJudicial // null),
         noLista: $candidato.numListaBoleta,
         rangoEdad: "N/A",
         actorPolitico: get_poder($candidato.poderPostula[0]).appPoderId,
@@ -17,7 +19,7 @@ include "catalogosINE";
         suplente: "",
         suplenteID: "",
         imagenPartido: "N/A",
-        materia: "NA",
+        materia: get_matter_uuid($candidato.especialidad // "NA"),
         numeroUnicoBoleta: $candidato.numListaBoleta,
         sexo: get_sexo($candidato.sexo),
         datosGenerales: {
@@ -31,7 +33,7 @@ include "catalogosINE";
         },
 
         mediosDeContacto: {
-                telefono: null,
+                telefono: $candidato.telefonoPublico,
                 correo: $candidato.correoElecPublico,
                 redesSociales: ($root.redesSociales | map(select(.idCandidato == $candidato.idCandidato).descripcionRed))
         },
@@ -74,4 +76,6 @@ include "catalogosINE";
 
     }
 ]
+|
+.[]
 
