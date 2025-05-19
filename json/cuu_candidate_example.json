@@ -1,0 +1,67 @@
+{
+  "candidatoID": "7c2bf63e-8f8d-49b7-939e-5f199c44814d",
+  "cargo": "MTDJ",
+  "municipio": "",
+  "distrito": "00-N/A",
+  "noLista": "1",
+  "rangoEdad": "30 a 39",
+  "actorPolitico": "PODER EJECUTIVO",
+  "propietario": "LUIS DANIEL MEZA GONZALEZ",
+  "suplente": "",
+  "suplenteID": "",
+  "imagenPartido": "24-PAN.png",
+  "materia": "NA",
+  "numeroUnicoBoleta": "15",
+  "sexo": "HOMBRE",
+  "datosGenerales": {
+    "nombre": "LUIS DANIEL MEZA GONZALEZ",
+    "cargo": "MAGISTRATURA DE TRIBUNAL DE DISCIPLINA  JUDICIAL",
+    "edad": "36",
+    "sexo": "HOMBRE",
+    "numeroBoleta": "15",
+    "direccion": "",
+    "paginaWeb": ""
+  },
+  "mediosDeContacto": {
+    "telefono": null,
+    "correo": "luisdaniel.meza15@outlook.com",
+    "redesSociales": [
+      "https://www.instagram.com/danielmezaglez",
+      "https://web.facebook.com/daniel.meza.940"
+    ]
+  },
+  "extras": [
+    {
+      "question": "¿Por qué quiero ocupar un cargo público?",
+      "answer": "ASPIRO A GARANTIZAR UN SISTEMA DE JUSTICIA PROFESIONAL Y HUMANA QUE RESPONDA A LAS NECESIDADES REALES DE LA CIUDADANIA."
+    },
+    {
+      "question": "Propuesta de mejora a la función jurisdiccional",
+      "answer": "EVALUAR Y FORTALECER LA FUNCION JURISDICCIONAL CON TRANSPARENCIA, PROFESIONALISMO Y CERCANIA A LA CIUDADANIA."
+    },
+    {
+      "question": "Visión acerca de la jurisdiccional e impartición de justicia",
+      "answer": "BUSCO RENOVAR Y HUMANIZAR EL PODER JUDICIAL, ASEGURANDO TRANSPARENCIA, ACCESIBILIDAD Y CERCANIA CON LA CIUDADANIA."
+    },
+    {
+      "question": "Trayectoria académica",
+      "answer": "LIC. EN DERECHO, MTRO. EN ADMINISTRACION PUBLICA Y ESTUDIANTE DE ESPECIALIDAD EN ANTICORRUPCION. TODOS CON EXCELENCIA."
+    },
+    {
+      "question": "Historia jurídica profesional y/o laboral",
+      "answer": "ABOGADO Y ACADEMICO CON TRAYECTORIA EN AUDITORIA, TRANSPARENCIA, CONTROL INTERNO Y COMBATE A LA CORRUPCION."
+    },
+    {
+      "question": "Ocupación actual",
+      "answer": "Abogado, docente y servidor público"
+    },
+    {
+      "question": "Grado máximo de estudios",
+      "answer": "MAESTRIA"
+    }
+  ],
+  "imageUrl": "https://sistemas.conocelesjudicialchihuahua.com/img/Candidato/3C1B6985-E0AF-44D3-A562-93BCEFDED614.jpg",
+  "curriculumUrl": "https://sistemas.conocelesjudicialchihuahua.com/docs/CV/CD7AE74F-28B0-4CE1-9901-683ABD516274.pdf",
+  "videoUrl": "https://conocelesjudicial.s3.amazonaws.com/7c2bf63e-8f8d-49b7-939e-5f199c44814d_fd8f1f7c-8947-4bef-a671-b2ccf1445143.webm?AWSAccessKeyId=AKIAYS2NWFLAJUCJUQMU&Expires=1744861769&Signature=JmT3PxDr6x24meXvvMZzF%2FOWrOs%3D",
+  "candidatoUrl": "https://conocelesjudicialchihuahua.com/perfil?7c2bf63e-8f8d-49b7-939e-5f199c44814d"
+}
