@@ -156,6 +156,9 @@ CREATE TABLE IF NOT EXISTS Candidate (
     -- JSON: distrito
     district int REFERENCES cat_District(id),
 
+    -- JSON: idCircuito
+    circuit int;
+
     -- CSV: VÍA DE POSTULACIÓN
     -- JSON: actorPolitico
     poder uuid NOT NULL REFERENCES cat_Poder(uuid),
@@ -278,6 +281,11 @@ USING btree
     position
 );
 
+CREATE INDEX IF NOT EXISTS idx_candidate_circuit ON Candidate
+USING btree
+(
+    circuit
+);
 
 
 -- CSV: REDES SOCIALES DE CONTACTO PÚBLICOS
