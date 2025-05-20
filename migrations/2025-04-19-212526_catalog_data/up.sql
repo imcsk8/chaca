@@ -63,7 +63,7 @@ INSERT INTO public.cat_district (id, name, id_inegi) VALUES (9999, 'FEDERAL', 0)
 -- Data for Name: cat_matter; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.cat_matter (uuid, name) VALUES ('44ebdda1-0622-46db-9d7c-14fee2cad40c', 'NA');
+INSERT INTO public.cat_matter (uuid, name) VALUES ('44ebdda1-0622-46db-9d7c-14fee2cad40c', 'N/D');
 INSERT INTO public.cat_matter (uuid, name) VALUES ('bd829a6a-9219-47f3-ae12-06be7be407b9', 'CIVIL');
 INSERT INTO public.cat_matter (uuid, name) VALUES ('5d262a6f-1a5c-4964-b086-b271f0302e66', 'DISCIPLINARIO');
 INSERT INTO public.cat_matter (uuid, name) VALUES ('cc1d47c3-f547-47f5-9bf4-e9058e50c825', 'FAMILIAR');
