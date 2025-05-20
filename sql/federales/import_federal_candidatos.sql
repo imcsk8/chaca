@@ -84,6 +84,8 @@ INSERT INTO Candidate (
     -- JSON: candidatoUrl
     candidato_url,
 
+    is_federal,
+
     -- Raw data from the institute
     raw_data
 )
@@ -109,6 +111,7 @@ SELECT
     sc.data->>'curriculumUrl',              -- curriculum_url
     sc.data->>'videoUrl',                   -- video_url
     sc.data->>'candidatoUrl',               -- candidato_url
+    TRUE,
     sc.data                                 -- raw_data
 FROM staging_candidates sc;
 
