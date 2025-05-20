@@ -1,9 +1,11 @@
 use crate::claims::Claims;
 use chaca_macros::{
     candidate_details,
+    federal_candidate_details,
     position_query,
     all_candidates,
     list_by_state_query,
+    list_all_federal_query,
     candidate_profile_query,
     candidate_reactions_query,
 };
@@ -116,6 +118,33 @@ pub async fn list_by_state(state_id: i32, cdb: ChacaDB) -> Template {
         all: "true",
     })
 }
+
+/// Show federal candidates
+//#[get("/<state_id>")]
+#[get("/federal")]
+pub async fn list_all_federal(cdb: ChacaDB) -> Template {
+    let results = cdb
+        .run(move |connection| {
+            // Shows the FederalCandidateWithDetails structure and needed modules
+            federal_candidate_details!();
+            // Build the query with JOINs for all foreign keys
+            diesel::sql_query(
+                list_all_federal_query!()
+            )
+            .load::<FederalCandidateWithDetails>(connection)
+            .expect("Error loading candidates with details")
+        })
+        .await;
+
+    Template::render("candidates_federal", context! {
+        candidates: &results,
+        main: "true",
+        count: results.len(),
+        all: "true",
+    })
+}
+
+
 
 /// Get a candidate and returns it as a JSON object
 #[get("/<candidateid>", format="json", rank = 1)]
