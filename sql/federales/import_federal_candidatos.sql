@@ -86,6 +86,8 @@ INSERT INTO Candidate (
 
     is_federal,
 
+    circuit,
+
     -- Raw data from the institute
     raw_data
 )
@@ -111,7 +113,8 @@ SELECT
     sc.data->>'curriculumUrl',              -- curriculum_url
     sc.data->>'videoUrl',                   -- video_url
     sc.data->>'candidatoUrl',               -- candidato_url
-    TRUE,
+    TRUE,                                   -- is_federal
+    (sc.data->>'circuito')::INT,            -- circuit
     sc.data                                 -- raw_data
 FROM staging_candidates sc;
 
