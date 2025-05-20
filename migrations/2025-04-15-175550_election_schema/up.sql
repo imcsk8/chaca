@@ -292,7 +292,7 @@ USING btree
 CREATE INDEX IF NOT EXISTS idx_candidate_is_federal ON Candidate
 USING btree
 (
-    is_federal,
+    is_federal
 );
 
 
