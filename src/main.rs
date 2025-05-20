@@ -57,6 +57,7 @@ fn rocket() -> _ {
                 candidates::judges_by_state,
                 candidates::mtsj_by_state,
                 candidates::mtdj_by_state,
+                candidates::list_all_federal,
                 candidates::add_reaction,
                 candidates::get_reactions,
                 candidates::delete_reaction,
