@@ -20,3 +20,5 @@ for json_file in ${FILES[@]}; do
     jq -c -f convert.jq $json_file > processed/processed_${json_file}.tmp
     jq -c -f ../sanitize.jq processed/processed_${json_file}.tmp > processed/processed_${json_file}
 done
+
+rm processed/*tmp
