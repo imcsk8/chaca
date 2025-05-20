@@ -12,6 +12,7 @@ include "catalogosINE";
         municipio: "",
         state: $candidato.idEstadoEleccion,
         distrito: ($candidato.idDistritoJudicial // null),
+        circuito: ($candidato.idCircuito // null),
         noLista: $candidato.numListaBoleta,
         rangoEdad: "N/A",
         actorPolitico: get_poder($candidato.poderPostula[0]).appPoderId,
