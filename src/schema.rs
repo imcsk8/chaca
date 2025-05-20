@@ -52,6 +52,8 @@ diesel::table! {
         paterno -> Nullable<Text>,
         materno -> Nullable<Text>,
         raw_data -> Nullable<Jsonb>,
+        circuit -> Nullable<Int4>,
+        is_federal -> Nullable<Bool>,
     }
 }
 
@@ -93,6 +95,18 @@ diesel::table! {
         id -> Int4,
         name -> Nullable<Text>,
         id_inegi -> Int4,
+    }
+}
+
+diesel::table! {
+    cat_estado_circuito (uuid) {
+        uuid -> Uuid,
+        seccion -> Int4,
+        iddistritofederal -> Int4,
+        iddistritojudicial -> Int4,
+        idestado -> Nullable<Int4>,
+        idcorte -> Int4,
+        idcircuito -> Int4,
     }
 }
 
@@ -189,6 +203,7 @@ diesel::joinable!(candidate -> cat_state (state));
 diesel::joinable!(candidate_reactions -> candidate (candidate_id));
 diesel::joinable!(candidate_reactions -> users (user_id));
 diesel::joinable!(cat_district -> cat_state (id_inegi));
+diesel::joinable!(cat_estado_circuito -> cat_state (idestado));
 diesel::joinable!(comment_reactions -> comments (comment_id));
 diesel::joinable!(comment_reactions -> users (user_id));
 diesel::joinable!(comments -> candidate (candidate_id));
@@ -200,6 +215,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     candidate_reactions,
     candidate_social_media,
     cat_district,
+    cat_estado_circuito,
     cat_matter,
     cat_poder,
     cat_positions,

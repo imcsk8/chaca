@@ -46,6 +46,8 @@ pub struct Candidate {
     pub materno: Option<String>,
     #[diesel(serialize_as = JsonValue)]
     pub raw_data: Option<serde_json::Value>,
+    pub circuit: Option<i32>,
+    pub is_federal: Option<bool>,
 }
 
 #[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize, AsChangeset)]
@@ -84,6 +86,19 @@ pub struct CatDistrict {
     pub id: i32,
     pub name: Option<String>,
     pub id_inegi: i32,
+}
+
+#[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize, AsChangeset)]
+#[diesel(primary_key(uuid))]
+#[diesel(table_name = cat_estado_circuito)]
+pub struct CatEstadoCircuito {
+    pub uuid: Uuid,
+    pub seccion: i32,
+    pub iddistritofederal: i32,
+    pub iddistritojudicial: i32,
+    pub idestado: Option<i32>,
+    pub idcorte: i32,
+    pub idcircuito: i32,
 }
 
 #[derive(Clone, Debug, Identifiable, Queryable, QueryableByName, Selectable, Insertable, Serialize, Deserialize, AsChangeset)]
