@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS cat_Positions (
 COMMENT ON TABLE cat_Positions IS E'Catálogo de posiciones judiciales';
 -- ddl-end --
 -- Set owner if needed ALTER TABLE public."cat_Positions" OWNER TO postgres;
--- ddl-end --
+- ddl-end --
 
 CREATE INDEX IF NOT EXISTS idx_cargo ON cat_Positions
 USING btree
@@ -224,6 +224,8 @@ CREATE TABLE IF NOT EXISTS Candidate (
     -- CSV: SEGUNDO APELLIDO
     materno text,
 
+    is_federal bool DEFAULT FALSE,
+
     raw_data jsonb
 );
 -- ddl-end --
@@ -286,6 +288,13 @@ USING btree
 (
     circuit
 );
+
+CREATE INDEX IF NOT EXISTS idx_candidate_is_federal ON Candidate
+USING btree
+(
+    is_federal,
+);
+
 
 
 -- CSV: REDES SOCIALES DE CONTACTO PÚBLICOS
