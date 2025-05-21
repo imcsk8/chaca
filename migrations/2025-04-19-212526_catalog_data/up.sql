@@ -63,14 +63,24 @@ INSERT INTO public.cat_district (id, name, id_inegi) VALUES (9999, 'FEDERAL', 0)
 -- Data for Name: cat_matter; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.cat_matter (uuid, name) VALUES ('44ebdda1-0622-46db-9d7c-14fee2cad40c', 'N/D');
-INSERT INTO public.cat_matter (uuid, name) VALUES ('bd829a6a-9219-47f3-ae12-06be7be407b9', 'CIVIL');
-INSERT INTO public.cat_matter (uuid, name) VALUES ('5d262a6f-1a5c-4964-b086-b271f0302e66', 'DISCIPLINARIO');
-INSERT INTO public.cat_matter (uuid, name) VALUES ('cc1d47c3-f547-47f5-9bf4-e9058e50c825', 'FAMILIAR');
-INSERT INTO public.cat_matter (uuid, name) VALUES ('586dec54-1bce-4fd9-a1ac-2a65013362c4', 'LABORAL');
-INSERT INTO public.cat_matter (uuid, name) VALUES ('118f6595-7be3-4c26-85a5-c94c681ab5eb', 'MENOR');
-INSERT INTO public.cat_matter (uuid, name) VALUES ('232951c0-2afd-48ae-a19a-1407a0831567', 'MIXTA');
-INSERT INTO public.cat_matter (uuid, name) VALUES ('4dccab04-adc2-4f75-a0c2-48fc5fedf332', 'PENAL');
+INSERT INTO public.cat_matter VALUES ('bd829a6a-9219-47f3-ae12-06be7be407b9', 'CIVIL');
+INSERT INTO public.cat_matter VALUES ('5d262a6f-1a5c-4964-b086-b271f0302e66', 'DISCIPLINARIO');
+INSERT INTO public.cat_matter VALUES ('cc1d47c3-f547-47f5-9bf4-e9058e50c825', 'FAMILIAR');
+INSERT INTO public.cat_matter VALUES ('586dec54-1bce-4fd9-a1ac-2a65013362c4', 'LABORAL');
+INSERT INTO public.cat_matter VALUES ('118f6595-7be3-4c26-85a5-c94c681ab5eb', 'MENOR');
+INSERT INTO public.cat_matter VALUES ('4dccab04-adc2-4f75-a0c2-48fc5fedf332', 'PENAL');
+INSERT INTO public.cat_matter VALUES ('44ebdda1-0622-46db-9d7c-14fee2cad40c', 'N/D');
+INSERT INTO public.cat_matter VALUES ('232951c0-2afd-48ae-a19a-1407a0831567', 'MIXTO');
+INSERT INTO public.cat_matter VALUES ('86674281-395d-4f5c-94a5-403ac80da52a', 'ADMINISTRATIVA');
+INSERT INTO public.cat_matter VALUES ('73bf69cf-98d6-497d-9f01-397731424892', 'ADMINISTRATIVA ESPECIALIZADO EN COMPETENCIA ECONÓMICA, RADIODIFUSIÓN Y TELECOMUNICACIONES');
+INSERT INTO public.cat_matter VALUES ('730c92ae-9feb-4131-89ac-a5359a8c42a0', 'ADMINISTRATIVA Y CIVIL');
+INSERT INTO public.cat_matter VALUES ('973c2829-8030-47b4-a7d7-c5c7c025914f', 'ADMINISTRATIVO Y DE TRABAJO');
+INSERT INTO public.cat_matter VALUES ('32c49f08-6b2a-499a-a6bf-e921823a26d8', 'APELACIÓN EN MATS. CIVIL Y ADMVA. ESPECIALIZADO EN COMPETENCIA ECONÓMICA, RADIODIFUSIÓN Y TELECOMUNICACIONES.');
+INSERT INTO public.cat_matter VALUES ('b0730a9e-27fb-4631-a97c-f1cbc3b9db69', 'CIVIL Y DE TRABAJO');
+INSERT INTO public.cat_matter VALUES ('bd2d09f8-c0a1-481b-baea-58328d7dd123', 'PENAL ADMINISTRATIVO');
+INSERT INTO public.cat_matter VALUES ('5622d9b6-cd7a-43d6-a3f7-497779704543', 'PENAL Y CIVIL');
+INSERT INTO public.cat_matter VALUES ('a2a1ab1c-c3cc-4b60-8d4e-61c5d25675d2', 'PENAL Y DE TRABAJO');
+INSERT INTO public.cat_matter VALUES ('0695c75e-83f5-43ed-b74f-96982c1e9d78', 'TRABAJO');
 
 
 --
