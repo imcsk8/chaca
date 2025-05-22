@@ -15,12 +15,12 @@ include "catalogosINE";
         circuito: ($candidato.idCircuito // null),
         noLista: $candidato.numListaBoleta,
         rangoEdad: "N/A",
-        actorPolitico: get_poder($candidato.poderPostula[0]).appPoderId,
+        actorPolitico: get_poder(sum_powers($candidato.poderPostula)).appPoderId,
         propietario: $candidato.nombreCandidato,
         suplente: "",
         suplenteID: "",
         imagenPartido: "N/A",
-        materia: get_matter_uuid($candidato.especialidad // "NA"),
+        materia: get_matter_uuid($candidato.especialidad // "N/D"),
         numeroUnicoBoleta: $candidato.numListaBoleta,
         sexo: get_sexo($candidato.sexo),
         datosGenerales: {
@@ -36,7 +36,7 @@ include "catalogosINE";
         mediosDeContacto: {
                 telefono: $candidato.telefonoPublico,
                 correo: $candidato.correoElecPublico,
-                redesSociales: ($root.redesSociales | map(select(.idCandidato == $candidato.idCandidato).descripcionRed))
+                redesSociales: (($root.redesSociales // []) | map(select(.idCandidato == $candidato.idCandidato).descripcionRed))
         },
 
        extras: [
