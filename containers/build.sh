@@ -2,7 +2,7 @@
 
 if [[ $1 == "" ]]; then
     echo "Usage: build.sh <image version>"
-    exit
+    exit 1
 fi
 
 VERSION=$1
