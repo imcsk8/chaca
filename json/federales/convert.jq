@@ -70,7 +70,7 @@ include "catalogosINE";
          }
        ],
        # Some entries don't have the urlFoto field, sanitizing...
-       imageUrl: "https://candidaturaspoderjudicial.ine.mx\(($candidato.urlFoto // "") | sub("/media"; ""))",
+       imageUrl: "https://candidaturaspoderjudicial.ine.mx\(($candidato.urlFoto // "/cycc/img/fotocandidato/\($candidato.idCandidato).jpg") | sub("/media"; ""))",
        curriculumUrl: "https://candidaturaspoderjudicial.ine.mx/cycc/documentos/cv/\($candidato.descripcionHLC)",
        videoUrl: null,
        candidatoUrl: "https://candidaturaspoderjudicial.ine.mx/detalleCandidato/\($candidato.idCandidato)/\($candidato.idTipoCandidatura)"
