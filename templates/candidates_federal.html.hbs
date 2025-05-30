@@ -31,11 +31,83 @@
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-md-8 text-center mb-4">
-            <h2 class="heading-section">Candidatos Federales {{ candidates.0.state_name }} {{#unless main}}{{ candidates.0.position_name  }}{{/unless}}</h2>
+            <h2 class="heading-section">Candidatos Federales: {{ candidates.0.state_name }}, {{#unless main}}{{ candidates.0.position_name  }}{{/unless}}</h2>
             <p>Total: {{count}} candidatos</p>
           </div>
         </div>
-        
+
+        <!-- Section and state selection  -->
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            <div class="search-box">
+            <ol>
+                <li>Selecciona estado y sección INE</li>
+                <li>Da click o pulsa en la posición que deseas buscar</li>
+            </ol>
+
+              <div class="row justify-content-center">
+                  <div class="col-xs">
+
+                      <div class="form-group">
+                          <label for="state-select">Estado:&nbsp;</label>
+                          <select id="state-select" name="state" class="form-control" style="width: 53%; display: inline;">
+                              <option value="">-- Seleccionar Estado --</option>
+                                <option value="0" {{#if (eq current_state 0)}}selected{{/if}}>Federal</option>
+                                <option value="1" {{#if (eq current_state 1)}}selected{{/if}}>Aguascalientes</option>
+                                <option value="2" {{#if (eq current_state 2)}}selected{{/if}}>Baja California</option>
+                                <option value="3" {{#if (eq current_state 3)}}selected{{/if}}>Baja California Sur</option>
+                                <option value="4" {{#if (eq current_state 4)}}selected{{/if}}>Campeche</option>
+                                <option value="5" {{#if (eq current_state 5)}}selected{{/if}}>Coahuila</option>
+                                <option value="6" {{#if (eq current_state 6)}}selected{{/if}}>Colima</option>
+                                <option value="7" {{#if (eq current_state 7)}}selected{{/if}}>Chiapas</option>
+                                <option value="8" {{#if (eq current_state 8)}}selected{{/if}}>Chihuahua</option>
+                                <option value="9" {{#if (eq current_state 9)}}selected{{/if}}>CDMX</option>
+                                <option value="10" {{#if (eq current_state 10)}}selected{{/if}}>Durango</option>
+                                <option value="11" {{#if (eq current_state 11)}}selected{{/if}}>Guanajuato</option>
+                                <option value="12" {{#if (eq current_state 12)}}selected{{/if}}>Guerrero</option>
+                                <option value="13" {{#if (eq current_state 13)}}selected{{/if}}>Hidalgo</option>
+                                <option value="14" {{#if (eq current_state 14)}}selected{{/if}}>Jalisco</option>
+                                <option value="15" {{#if (eq current_state 15)}}selected{{/if}}>México</option>
+                                <option value="16" {{#if (eq current_state 16)}}selected{{/if}}>Michoacán</option>
+                                <option value="17" {{#if (eq current_state 17)}}selected{{/if}}>Morelos</option>
+                                <option value="18" {{#if (eq current_state 18)}}selected{{/if}}>Nayarit</option>
+                                <option value="19" {{#if (eq current_state 19)}}selected{{/if}}>Nuevo León</option>
+                                <option value="20" {{#if (eq current_state 20)}}selected{{/if}}>Oaxaca</option>
+                                <option value="21" {{#if (eq current_state 21)}}selected{{/if}}>Puebla</option>
+                                <option value="22" {{#if (eq current_state 22)}}selected{{/if}}>Querétaro</option>
+                                <option value="23" {{#if (eq current_state 23)}}selected{{/if}}>Quintana Roo</option>
+                                <option value="24" {{#if (eq current_state 24)}}selected{{/if}}>San Luis Potosí</option>
+                                <option value="25" {{#if (eq current_state 25)}}selected{{/if}}>Sinaloa</option>
+
+                                <option value="27" {{#if (eq current_state 27)}}selected{{/if}}>Tabasco</option>
+                                <option value="28" {{#if (eq current_state 28)}}selected{{/if}}>Tamaulipas</option>
+                                <option value="29" {{#if (eq current_state 29)}}selected{{/if}}>Tlaxcala</option>
+                                <option value="30" {{#if (eq current_state 30)}}selected{{/if}}>Veracruz</option>
+                                <option value="31" {{#if (eq current_state 31)}}selected{{/if}}>Yucatán</option>
+                                <option value="32" {{#if (eq current_state 32)}}selected{{/if}}>Zacatecas</option>
+                          </select>
+                      </div>
+                  </div> <!-- col -->
+
+                  <div class="col-xs" style="padding-top: 0%;">
+                      <div class="input-group">
+                        <label for="section-input" style="padding-top: 4px;">Sección INE:&nbsp;</label>
+                        <input type="text" value="" size=4 id="section-input" class="form-control" placeholder="Seccion INE">
+                        <div class="input-group-append">
+                          <!-- <button class="btn btn-primary" id="searchButton">
+                            <i class="fa fa-search"></i> Buscar
+                          </button> -->
+                        </div>
+                      </div>
+                  </div> <!-- col -->
+
+              </div> <!-- row -->
+
+            </div>
+          </div>
+        </div>
+
+
         <!-- Positions menu -->
 
 
@@ -45,6 +117,31 @@
             <div class="position-filter-menu compact mb-2">
               <ul class="nav nav-pills nav-justified menu-list">
 
+              <!-- Suprema corte -->
+              {{#if mscjn }}
+                <!-- Selected Option -->
+                <script>
+                    // Selected menu option
+                    var option = "mscjn";
+                </script>
+
+                <li class="nav-item menu-item menu-item-selected">
+                  <a class="nav-link active btn btn-xs btn-primary menu-item-selected" OnClick="CandidatesRedirect('/candidates/federal/mscjn', false)" data-filter="magistrados-tcca">
+                    <span class="menu-title">Ministr(as/os)</span>
+                    <span class="menu-subtitle">Suprema Corte</span>
+                  </a>
+                </li>
+              {{else}}
+                <li class="nav-item menu-item">
+                  <a class="nav-link active btn btn-xs btn-primary" OnClick="CandidatesRedirect('/candidates/federal/mscjn', false)" data-filter="magistrados-tcca">
+                    <span class="menu-title">Ministr(as/os)</span>
+                    <span class="menu-subtitle">Suprema Corte</span>
+                  </a>
+                </li>
+              {{/if}}
+              <!-- /Suprema corte -->
+
+              <!-- Jueces -->
               {{#if judges }}
                 <!-- Selected Option -->
                 <script>
@@ -53,43 +150,20 @@
                 </script>
 
                 <li id="button-jueces" class="nav-item menu-item menu-item-selected">
-                  <a class="nav-link active btn btn-xs btn-primary menu-item-selected" href="/candidates/judges" data-filter="jueces">
-                    <span class="menu-title">Jueces</span>
+                  <a class="nav-link active btn btn-xs btn-primary menu-item-selected" OnClick="CandidatesRedirect('/candidates/federal/judges', true)" data-filter="jueces">
+                    <span class="menu-title">Juezas/Jueces</span>
                   </a>
                 </li>
               {{else}}
                 <li id="button-jueces" class="nav-item menu-item">
-                  <a class="nav-link active btn btn-xs btn-primary" href="/candidates/federal/judges" data-filter="jueces">
-                    <span class="menu-title">Jueces</span>
+                  <a class="nav-link active btn btn-xs btn-primary" OnClick="CandidatesRedirect('/candidates/federal/judges', true)" data-filter="jueces">
+                    <span class="menu-title">Juezas/Jueces</span>
                   </a>
                 </li>
               {{/if}}
+              <!-- /Jueces -->
 
-
-
-              {{#if mtsj }}
-                <!-- Selected Option -->
-                <script>
-                    // Selected menu option
-                    var option = "mtsj";
-                </script>
-
-                <li class="nav-item menu-item menu-item-selected">
-                  <a class="nav-link active btn btn-xs btn-primary menu-item-selected" href="/candidates/federal/mtsj" data-filter="magistrados-tsj">
-                    <span class="menu-title">Magistrados</span>
-                    <span class="menu-subtitle"><small>T. Superior</small></span>
-                  </a>
-                </li>
-              {{else}}
-                <li class="nav-item menu-item">
-                  <a class="nav-link active btn btn-xs btn-primary" href="/candidates/federal/mtsj" data-filter="magistrados-tsj">
-                    <span class="menu-title">Magistrados</span>
-                    <span class="menu-subtitle"><small>T. Superior</small></span>
-                  </a>
-                </li>
-              {{/if}}
-
-
+              <!-- Tribunal de disciplina judicial -->
               {{#if mtdj }}
                 <!-- Selected Option -->
                 <script>
@@ -98,43 +172,92 @@
                 </script>
 
                 <li class="nav-item menu-item menu-item-selected">
-                  <a class="nav-link active btn btn-xs btn-primary menu-item-selected" href="/candidates/federal/mtdj" data-filter="magistrados-dj">
-                    <span class="menu-title">Magistrados </span>
+                  <a class="nav-link active btn btn-xs btn-primary menu-item-selected" OnClick="CandidatesRedirect('/candidates/federal/mtdj', false)" data-filter="magistrados-dj">
+                    <span class="menu-title">Magistraturas</span>
                     <span class="menu-subtitle"><small>T. Disciplina</small></span>
                   </a>
                 </li>
               {{else}}
                 <li class="nav-item menu-item">
-                  <a class="nav-link active btn btn-xs btn-primary" href="/candidates/federal/mtdj" data-filter="magistrados-dj">
-                    <span class="menu-title">Magistrados </span>
-                    <span class="menu-subtitle"><small>T. Disciplina</small></span>
+                  <a class="nav-link active btn btn-xs btn-primary" OnClick="CandidatesRedirect('/candidates/federal/mtdj', false)" data-filter="magistrados-dj">
+                    <span class="menu-title">Magistraturas</span>
+                    <span class="menu-subtitle">T. Disciplina</span>
                   </a>
                 </li>
               {{/if}}
+              <!-- /Tribunal de disciplina judicial -->
 
-
-              {{#if all }}
+              <!-- Sala superior tribunal electoral -->
+              {{#if mste }}
                 <!-- Selected Option -->
                 <script>
                     // Selected menu option
-                    var option = "all";
+                    var option = "mste";
                 </script>
 
                 <li class="nav-item menu-item menu-item-selected">
-                  <a class="nav-link active btn btn-xs btn-primary menu-item-selected" href="/candidates/federal" data-filter="todos">
-                    <span class="menu-title">Todos</span>
+                  <a class="nav-link active btn btn-xs btn-primary menu-item-selected" OnClick="CandidatesRedirect('/candidates/federal/mste', false)" data-filter="magistrados-ste">
+                    <span class="menu-title">Magistraturas</span>
+                    <span class="menu-subtitle">Superior Electoral</span>
                   </a>
                 </li>
-              </ul>
-
               {{else}}
                 <li class="nav-item menu-item">
-                  <a class="nav-link active btn btn-xs btn-primary" href="/candidates/{{ candidates.0.state }}" data-filter="todos">
-                    <span class="menu-title">Todos</span>
+                  <a class="nav-link active btn btn-xs btn-primary" OnClick="CandidatesRedirect('/candidates/federal/mste', false)" data-filter="magistrados-ste">
+                    <span class="menu-title">Magistraturas</span>
+                    <span class="menu-subtitle">Superior Electoral</span>
                   </a>
                 </li>
-              </ul>
               {{/if}}
+              <!-- /Sala superior tribunal electoral -->
+
+              <!-- Salas regionales tribunal electoral -->
+              {{#if msrte }}
+                <!-- Selected Option -->
+                <script>
+                    // Selected menu option
+                    var option = "msrte";
+                </script>
+
+                <li class="nav-item menu-item menu-item-selected">
+                  <a class="nav-link active btn btn-xs btn-primary menu-item-selected" OnClick="CandidatesRedirect('/candidates/federal/msrte', false)" data-filter="magistrados-srte">
+                    <span class="menu-title">Magistraturas</span>
+                    <span class="menu-subtitle">Regional Electoral</span>
+                  </a>
+                </li>
+              {{else}}
+                <li class="nav-item menu-item">
+                  <a class="nav-link active btn btn-xs btn-primary" OnClick="CandidatesRedirect('/candidates/federal/msrte', false)" data-filter="magistrados-srte">
+                    <span class="menu-title">Magistraturas</span>
+                    <span class="menu-subtitle">Regional Electoral</span>
+                  </a>
+                </li>
+              {{/if}}
+              <!-- /Salas regionales tribunal electoral -->
+
+              <!-- Tribunales colegiados -->
+              {{#if mtcaa }}
+                <!-- Selected Option -->
+                <script>
+                    // Selected menu option
+                    var option = "ctcaa";
+                </script>
+
+                <li class="nav-item menu-item menu-item-selected">
+                  <a class="nav-link active btn btn-xs btn-primary menu-item-selected" OnClick="CandidatesRedirect('/candidates/federal/mtcca', false)" data-filter="magistrados-tcca">
+                    <span class="menu-title">Magistraturas</span>
+                    <span class="menu-subtitle">T. Colegiado</span>
+                  </a>
+                </li>
+              {{else}}
+                <li class="nav-item menu-item">
+                  <a class="nav-link active btn btn-xs btn-primary" OnClick="CandidatesRedirect('/candidates/federal/mtcca', false)" data-filter="magistrados-tcca">
+                    <span class="menu-title">Magistraturas</span>
+                    <span class="menu-subtitle"><small>T. Colegiado</small></span>
+                  </a>
+                </li>
+              {{/if}}
+              <!-- /Tribunales colegiados -->
 
             </div>
 
@@ -146,17 +269,8 @@
                 <li class="nav-item submenu-item" data-matter="CIVIL">
                   <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="civil">CIVIL</a>
                 </li>
-                <li class="nav-item submenu-item" data-matter="FAMILIAR">
-                  <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="familiar">FAMILIAR</a>
-                </li>
                 <li class="nav-item submenu-item" data-matter="LABORAL">
                   <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="laboral">LABORAL</a>
-                </li>
-                <li class="nav-item submenu-item" data-matter="MENOR">
-                  <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="menor">MENOR</a>
-                </li>
-                <li class="nav-item submenu-item" data-matter="MIXTA">
-                  <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="mixta">MIXTO</a>
                 </li>
                 <li class="nav-item submenu-item" data-matter="PENAL">
                   <a class="nav-link btn btn-sm btn-outline-custom btn-custom active" href="#" data-category="penal">PENAL</a>
@@ -181,8 +295,6 @@
               </ul>
             </div>
           {{/if}}
-
-
 
           </div>
         </div>
@@ -282,7 +394,7 @@
                     <td style="word-wrap: break-word; max-width: 200px; white-space: normal;">
                         {{this.position_name}}
                     </td>
-                    <td>
+                    <td style="word-wrap: break-word; max-width: 150px; white-space: normal;">
                       {{ this.matter_name}}
                     </td>
                     <td>{{#if this.district}}{{this.district}}{{else}}N/D{{/if}}</td>
@@ -421,7 +533,7 @@
         $('#searchButton').click(function() {
           performSearch();
         });
-        
+
         // Search input keyup handler (search as you type)
         $('#searchInput').on('keyup', function(e) {
           // Search on Enter key
@@ -430,6 +542,31 @@
           //}
         });
       });
+
+
+      /// Redirects to the position URL given in path
+      function CandidatesRedirect(path, check_section) {
+          if ( ! check_section ) {
+              document.location.href = path;
+              return;
+          }
+
+          var state = $("#state-select").val();
+          var section = $("#section-input").val();
+          if ( state === "") {
+              alert("Es necesario seleccionar un estado");
+              console.log("Es necesario seleccionar un estado");
+              return;
+          }
+          if ( section === "") {
+              alert("Es necesario proporcionar tu sección electoral, revisa la parte inferior derecha de la parte frontal de tu INE");
+              console.log("Es necesario proporcionar sección electoral");
+              return;
+          }
+          var candidate_location = `${path}/${state}/${section}`;
+          console.log("Redirecting to: " + candidate_location);
+          document.location.href = candidate_location;
+      }
 
     </script>
   </body>
