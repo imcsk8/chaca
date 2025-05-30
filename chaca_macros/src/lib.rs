@@ -211,6 +211,7 @@ macro_rules! position_query {
     };
 }
 
+
 /// Macro that generates query for federal positions
 /// Arguments
 /// position: Position id for cat_positions
@@ -228,7 +229,7 @@ macro_rules! federal_position_query {
             m.name as matter_name,
             reactions.like_count as like_count,
             reactions.dislike_count as dislike_count,
-            reactions.danger_count as danger_count
+        reactions.danger_count as danger_count
         FROM candidate c
         JOIN cat_state s ON c.state = s.id_inegi
         JOIN cat_positions p ON c.position = p.id
@@ -246,6 +247,48 @@ macro_rules! federal_position_query {
         ) AS reactions ON true
 
         WHERE c.is_federal = true AND c.position={}
+        ORDER BY c.fullname", $position)
+    };
+}
+
+
+
+/// Macro that generates query for federal positions by state and INE section
+/// Arguments
+/// position: Position id for cat_positions
+#[macro_export]
+macro_rules! federal_position_query_by_sate_section {
+    ($position:expr) => {
+        format!("SELECT c.*,
+            CASE
+                WHEN c.sex = 'HOMBRE' THEN concat_ws(' ', p.male_name, p.long_name)
+                WHEN c.sex = 'MUJER' THEN concat_ws(' ', p.female_name, p.long_name)
+                ELSE concat_ws(' ', p.male_name, p.long_name) -- Default fallback
+            END AS position_name,
+            s.name as state_name,
+            po.name as poder_name,
+            m.name as matter_name,
+            reactions.like_count as like_count,
+            reactions.dislike_count as dislike_count,
+        reactions.danger_count as danger_count
+        FROM candidate c
+        JOIN cat_state s ON c.state = s.id_inegi
+        JOIN cat_estado_circuito ca ON c.state = ca.idestado
+        JOIN cat_positions p ON c.position = p.id
+        JOIN cat_poder po ON c.poder = po.uuid
+        LEFT JOIN cat_matter m ON c.matter = m.uuid
+        LEFT JOIN LATERAL (
+            SELECT
+                COUNT(CASE WHEN reaction_type = 'LIKE' THEN 1 ELSE NULL END) AS like_count,
+                COUNT(CASE WHEN reaction_type = 'DISLIKE' THEN 1 ELSE NULL END) AS dislike_count,
+                COUNT(CASE WHEN reaction_type = 'DANGER' THEN 1 ELSE NULL END) AS danger_count
+            FROM
+                candidate_reactions
+            WHERE
+                candidate_id = c.id
+        ) AS reactions ON true
+
+        WHERE c.is_federal = true AND c.position={} AND c.state=$1 AND ca.seccion=$2
         ORDER BY c.fullname", $position)
     };
 }
