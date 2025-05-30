@@ -22,6 +22,7 @@ function performSearch() {
             const position = $row.data('position').toLowerCase();
             const state = $row.data('state').toLowerCase();
             const matter = $row.data('matter').toLowerCase();
+            const ine_section = $row.data('ine_section').toLowerCase();
           
             // Check if any of the data contains the search term
             if (fullname.includes(searchTerm) || 
