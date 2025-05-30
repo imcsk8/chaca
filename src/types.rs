@@ -343,6 +343,9 @@ pub enum Positions {
     Mtsj         = 3,
     Mtdj         = 4,
     Mscjn        = 5,
+    Mste         = 6,
+    Msrte        = 7,
+    Mtcca        = 8,
 }
 
 /// Display for Positions enum
