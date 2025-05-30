@@ -3,6 +3,8 @@ use chaca_macros::{
     candidate_details,
     federal_candidate_details,
     position_query,
+    federal_position_query,
+    federal_position_query_by_sate_section,
     all_candidates,
     list_by_state_query,
     list_all_federal_query,
@@ -21,14 +23,14 @@ use rocket::response::status::{Created, Custom, NotFound};
 use rocket::serde::json::Json;
 use rocket::serde::uuid::Uuid;
 use rocket::{delete, get, post, put};
-use rocket_dyn_templates::{context, Template};
+use rocket_dyn_templates::{context, handlebars, Template};
 use rocket_sync_db_pools::diesel;
 use rocket::http::Status;
 use serde_json::json;
 use rocket::serde::{Deserialize, Serialize};
 use diesel::sql_types::{BigInt, Uuid as SqlUuid};
 use diesel::QueryableByName;
-
+use rocket_dyn_templates::handlebars::{Helper, Handlebars, Context, RenderContext, Output, HelperResult};
 
 #[derive(Queryable, QueryableByName, Serialize, Deserialize, Debug)]
 pub struct CandidateReactions {
@@ -120,7 +122,6 @@ pub async fn list_by_state(state_id: i32, cdb: ChacaDB) -> Template {
 }
 
 /// Show federal candidates
-//#[get("/<state_id>")]
 #[get("/federal")]
 pub async fn list_all_federal(cdb: ChacaDB) -> Template {
     let results = cdb
@@ -301,10 +302,186 @@ pub async fn mtdj_by_state(state_id: i32, cdb: ChacaDB) -> Template {
 /*******************************************************************************
 *                                                                              *
 *                                                                              *
-*                      R E A C T I O N  E N D P O I N T S                      *
+*               F E D E R A L  P O S I T I O N  E N D P O I N T S              *
 *                                                                              *
 *                                                                              *
 ********************************************************************************/
+//TODO: Unify this with state positions, I'm in a rush so I'll just repeat code
+//      It might be better to repeat code since federal stuff is like a corner case
+
+/// Show candidates for federal judges
+#[get("/federal/judges/<state_id>/<electoral_section>")]
+pub async fn federal_judges(
+    state_id: i32,
+    electoral_section: i32,
+    cdb: ChacaDB
+) -> Template {
+    let results = cdb
+        .run(move |connection| {
+            // Shows the CandidateWithDetails structure and needed modules
+            federal_candidate_details!();
+            // Build the query with JOINs for all foreign keys
+            diesel::sql_query(
+                federal_position_query_by_sate_section!(Positions::JuezDistrito)
+            )
+            .bind::<Integer, _>(state_id)
+            .bind::<Integer, _>(electoral_section)
+            .load::<FederalCandidateWithDetails>(connection)
+            .expect("Error loading candidates with details")
+        })
+        .await;
+
+    Template::render("candidates_federal", context! {
+        candidates: &results,
+        count: results.len(),
+        current_state: state_id,
+        judges: "true",
+    })
+}
+
+
+/// Show candidates for "magistrados tribunal disciplina judicial"
+#[get("/federal/mtdj")]
+pub async fn federal_mtdj(
+    cdb: ChacaDB
+) -> Template {
+    let results = cdb
+        .run(move |connection| {
+            // Shows the CandidateWithDetails structure and needed modules
+            federal_candidate_details!();
+            // Build the query with JOINs for all foreign keys
+            diesel::sql_query(
+                federal_position_query!(Positions::Mtdj)
+            )
+            .load::<FederalCandidateWithDetails>(connection)
+            .expect("Error loading candidates with details")
+        })
+        .await;
+
+    Template::render("candidates_federal", context! {
+        candidates: &results,
+        count: results.len(),
+        current_state: 0,
+        mtdj: "true",
+    })
+}
+
+
+/// Show candidates for "ministros suprema corte"
+#[get("/federal/mscjn")]
+pub async fn federal_mscjn(
+    cdb: ChacaDB
+) -> Template {
+    let results = cdb
+        .run(move |connection| {
+            // Shows the CandidateWithDetails structure and needed modules
+            federal_candidate_details!();
+            // Build the query with JOINs for all foreign keys
+            diesel::sql_query(
+                federal_position_query!(Positions::Mscjn)
+            )
+            .load::<FederalCandidateWithDetails>(connection)
+            .expect("Error loading candidates with details")
+        })
+        .await;
+
+    Template::render("candidates_federal", context! {
+        candidates: &results,
+        count: results.len(),
+        current_state: 0,
+        mscjn: "true",
+    })
+}
+
+
+/// Show candidates for "magistrados sala superior electoral"
+#[get("/federal/mste")]
+pub async fn federal_mste(
+    cdb: ChacaDB
+) -> Template {
+    let results = cdb
+        .run(move |connection| {
+            // Shows the CandidateWithDetails structure and needed modules
+            federal_candidate_details!();
+            // Build the query with JOINs for all foreign keys
+            diesel::sql_query(
+                federal_position_query!(Positions::Mste)
+            )
+            .load::<FederalCandidateWithDetails>(connection)
+            .expect("Error loading candidates with details")
+        })
+        .await;
+
+    Template::render("candidates_federal", context! {
+        candidates: &results,
+        count: results.len(),
+        current_state: 0,
+        mste: "true",
+    })
+}
+
+
+/// Show candidates for "magistrados sala regional electoral"
+#[get("/federal/msrte")]
+pub async fn federal_msrte(
+    cdb: ChacaDB
+) -> Template {
+    let results = cdb
+        .run(move |connection| {
+            // Shows the CandidateWithDetails structure and needed modules
+            federal_candidate_details!();
+            // Build the query with JOINs for all foreign keys
+            diesel::sql_query(
+                federal_position_query!(Positions::Msrte)
+            )
+            .load::<FederalCandidateWithDetails>(connection)
+            .expect("Error loading candidates with details")
+        })
+        .await;
+
+    Template::render("candidates_federal", context! {
+        candidates: &results,
+        count: results.len(),
+        current_state: 0,
+        msrte: "true",
+    })
+}
+
+
+/// Show candidates for "magistrados tribunales colegiados"
+#[get("/federal/mtcca")]
+pub async fn federal_mtcca(
+    cdb: ChacaDB
+) -> Template {
+    let results = cdb
+        .run(move |connection| {
+            // Shows the CandidateWithDetails structure and needed modules
+            federal_candidate_details!();
+            // Build the query with JOINs for all foreign keys
+            diesel::sql_query(
+                federal_position_query!(Positions::Mtcca)
+            )
+            .load::<FederalCandidateWithDetails>(connection)
+            .expect("Error loading candidates with details")
+        })
+        .await;
+
+    Template::render("candidates_federal", context! {
+        candidates: &results,
+        count: results.len(),
+        current_state: 0,
+        mtcca: "true",
+    })
+}
+
+
+/*******************************************************************************
+*                                                                              *
+*                                                                              *
+*                      R E A C T I O N  E N D P O I N T S                      *
+*                                                                              *
+*                                                                              *
+*******************************************************************************/
 
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -405,3 +582,48 @@ pub async fn delete_reaction(
         Err(NotFound("Could not find the reaction".to_string()))
     }
 }
+
+
+/*******************************************************************************
+*                                                                              *
+*                                                                              *
+*                    H A N D L E B A R S  H E L P E R S                        *
+*                                                                              *
+*                                                                              *
+*******************************************************************************/
+
+/*
+Helper experiment, to use it put this in main
+
+.attach(Template::custom(|engines| {
+    engines.handlebars.register_helper("eq", Box::new(eq_helper));
+    }))
+
+    instead of:
+.attach(Template::fairing())
+
+
+/// Handlebars helper that returns true of false on numbers or strings
+pub fn eq_helper(
+    h: &Helper,
+    _: &Handlebars,
+    _: &Context,
+    _: &mut RenderContext,
+    out: &mut dyn Output,
+) -> HelperResult {
+    let param1 = h.param(0).and_then(|v| v.value().as_i64());
+    let param2 = h.param(1).and_then(|v| v.value().as_i64());
+
+    let result = match (param1, param2) {
+        (Some(a), Some(b)) => a == b,
+        _ => {
+            let str1 = h.param(0).map(|v| v.value().to_string());
+            let str2 = h.param(1).map(|v| v.value().to_string());
+            str1 == str2
+        }
+    };
+
+    // Write "true" or "false" - useful for debugging
+    //out.write(&result.to_string())?;
+    Ok(())
+}*/
